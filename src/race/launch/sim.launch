@@ -1,10 +1,17 @@
 <launch>
 
+    <!-- Launch your node -->
+    <node name="odom" pkg="race" type="odom_node" output="screen">
+        <!-- TODO-4 : load yaml file into the node -->
+        <!-- Hint : rosparam, load, launch -->
+        <rosparam file="$(find race)/config/odom_params.yaml" />
+    </node>
+    
     <!-- Launch gazebo simulation -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
 
         <!-- TODO-2 : load your own world -->
-        <arg name="world_name" value="$(find sim)/world/sim.world"/>
+        <arg name="world_name" value="$(find race)/world/sim.world"/>
         
         <arg name="use_sim_time" value="true"/>
         <arg name="gui" value="true"/>
@@ -13,7 +20,7 @@
 
     <!-- Load Robot into gazebo -->
     <!-- No need to understand, just launch it -->
-    <param name="descriptions" command="$(find xacro)/xacro --inorder $(find sim)/urdf/robot_simulation.urdf.xacro"/>
+    <param name="descriptions" command="$(find xacro)/xacro --inorder $(find race)/urdf/robot_simulation.urdf.xacro"/>
     <node pkg="gazebo_ros" type="spawn_model" name="robot_simulation" 
           args="-urdf -model turtlebot3_burger -x 0.0 -y 0.0 -z 0.0 -param descriptions" />
 
@@ -24,6 +31,6 @@
     <node name="imu_link_to_scan" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 base_footprint imu_link"/>
 
     <!-- RViz -->
-    <node name="rviz" type="rviz" pkg="rviz" args="-d $(find sim)/rviz/sim.rviz"/>
+    <node name="rviz" type="rviz" pkg="rviz" args="-d $(find race)/rviz/sim.rviz"/>
 
 </launch>

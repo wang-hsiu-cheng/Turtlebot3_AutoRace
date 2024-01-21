@@ -1,0 +1,8 @@
+prefix=/home/twang/Turtlebot3_AutoRace/devel
+
+Name: race
+Description: Description of race
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
