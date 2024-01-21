@@ -1,5 +1,12 @@
 <launch>
 
+    <!-- Launch your node -->
+    <node name="odom" pkg="race" type="odom_node" output="screen">
+        <!-- TODO-4 : load yaml file into the node -->
+        <!-- Hint : rosparam, load, launch -->
+        <rosparam file="$(find race)/config/odom_params.yaml" />
+    </node>
+    
     <!-- Launch gazebo simulation -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
 

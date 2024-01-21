@@ -198,6 +198,13 @@ add_executable(reset src/reset.cpp)
 target_link_libraries(reset ${catkin_LIBRARIES})
 add_dependencies(reset ${catkin_EXPORTED_TARGETS})
 
+add_library(odom lib/odom.cpp)
+target_link_libraries(odom ${catkin_LIBRARIES})
+add_dependencies(odom ${catkin_EXPORTED_TARGETS})
+
+add_executable(odom_node src/odom_node.cpp)
+target_link_libraries(odom_node odom)
+
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}

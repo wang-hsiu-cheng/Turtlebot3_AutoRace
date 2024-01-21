@@ -1,0 +1,13 @@
+# TODO-3 : Write your own config yaml file
+# Example : https://github.com/Assume-Zhan/Eurobot-Localization/blob/main/eurobot_localization/config/global_filter_basic.yaml
+
+active: true
+publish_odom: true
+frequency: 30
+cov_vx: 1e-9
+cov_vy: 1e-9
+cov_vyaw: 1e-9
+fixed_frame_id: "odom" 
+target_frame_id: "base_footprint"
+
+# ...
