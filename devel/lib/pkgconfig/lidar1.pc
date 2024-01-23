@@ -1,7 +1,7 @@
 prefix=/home/miffy1233/racing/Turtlebot3_AutoRace/devel
 
-Name: race
-Description: Description of race
+Name: lidar1
+Description: Description of lidar1
 Version: 0.0.0
 Cflags: 
 Libs: -L${prefix}/lib 
