@@ -1,0 +1,6 @@
+[submodule "src/lidar1/YDLidar-SDK"]
+	path = src/lidar1/YDLidar-SDK
+	url = git@github.com:wintera1233/YDLidar-SDK.git
+[submodule "src/lidar1/ydlidar_ros_driver"]
+	path = src/lidar1/ydlidar_ros_driver
+	url = git@github.com:YDLIDAR/ydlidar_ros_driver.git
