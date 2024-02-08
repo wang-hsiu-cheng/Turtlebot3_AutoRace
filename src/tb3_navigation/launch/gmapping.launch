@@ -40,4 +40,5 @@
 
     <node pkg="rviz" type="rviz" name="rviz" />
     <!-- can save rviz setting and prepare for later work -->
+    <node pkg="rviz" type="rviz" name="rviz" />
 </launch>
