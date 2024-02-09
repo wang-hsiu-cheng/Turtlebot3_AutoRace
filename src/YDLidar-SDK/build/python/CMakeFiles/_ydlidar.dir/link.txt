@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC  -std=c++11 -std=c++11  -shared  -o _ydlidar.so CMakeFiles/_ydlidar.dir/CMakeFiles/_ydlidar.dir/ydlidar_sdkPYTHON_wrap.cxx.o  /usr/lib/x86_64-linux-gnu/libpython3.8.so ../libydlidar_sdk.a -lpthread -lrt 
