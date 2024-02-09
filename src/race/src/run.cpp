@@ -1,6 +1,7 @@
 #include "race/run.h"
 
-void init_all_sensors(ros::NodeHandle nh);
+int init_all_sensors(ros::NodeHandle nh);
+void race_levels();
 
 int main(int argc, char **argv)
 {
@@ -76,24 +77,23 @@ void race_levels()
     turn_script();
     road_line_detect(1);
     level++;
-    avoid_wall_script();
+    // avoid_wall_script();
     road_line_detect(2);
     level++;
-    parking_script();
+    // parking_script();
     road_line_detect(3);
     level++;
     VISION::fance_image();
     road_line_detect(4);
     level++;
-    navigation_system();
+    // navigation_system();
     road_line_detect(0);
     level++;
 }
 
 int init_all_sensors(ros::NodeHandle nh)
 {
-    MECANUM::init(nh);
-    SCARA::init(nh);
+    // WHEEL::init(nh);
     // IMU::init();
     return 1;
 }

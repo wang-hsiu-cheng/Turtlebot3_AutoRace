@@ -7,10 +7,10 @@ void turn_script(void)
     double y;
     double z;
     WHEEL::moveTo(x, y, z);
-    WHEEL::turn('l');
+    // WHEEL::turn('l');
     do
     {
         WHEEL::moveTo(x, y, z);
         VISION::turn_sign_image();
-    } while (!VISION::is_sign_exist)
+    } while (!VISION::is_sign_exist);
 }

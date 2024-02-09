@@ -134,9 +134,18 @@ void VISION::turn_sign_image()
         if (waitKey(1) == 'q')
             break;
     }
-    return 0;
+    return ;
 }
 void VISION::fance_image()
+{
+}
+void VISION::stop_sign_image()
+{
+}
+void VISION::parking_sign_image()
+{
+}
+void VISION::tunnel_sign_image()
 {
 }
 void VISION::E_image(void)
@@ -175,7 +184,7 @@ void VISION::CTFL_image(void)
     src = VISION::CTFL_filter(src);
     VISION::CTFL_contour(original_image, src, epsilon, minContour, maxContour, lowerBondArea);
 }
-Mat FiltGraph(Mat img, char color_code)
+Mat VISION::FiltGraph(Mat img, char color_code)
 {
     Mat img_hsv, mask, result;
     cvtColor(img, img_hsv, COLOR_BGR2HSV);
@@ -218,7 +227,7 @@ Mat FiltGraph(Mat img, char color_code)
     // imshow("Letter Filted", result);
     return result;
 }
-void FiltContour(Mat original_image, Mat image, double epsilon, int minContour, int maxContour, double lowerBondArea)
+void VISION::FiltContour(Mat original_image, Mat image, double epsilon, int minContour, int maxContour, double lowerBondArea)
 {
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);

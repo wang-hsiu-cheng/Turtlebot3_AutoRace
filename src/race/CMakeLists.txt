@@ -166,6 +166,10 @@ add_library(mecanum src/mecanum.cpp)
 target_link_libraries(mecanum yaml-cpp ${catkin_LIBRARIES})
 add_dependencies(mecanum ${catkin_EXPORTED_TARGETS})
 
+add_library(wheel src/wheel.cpp)
+target_link_libraries(wheel yaml-cpp ${catkin_LIBRARIES})
+add_dependencies(wheel ${catkin_EXPORTED_TARGETS})
+
 # add_library(ekf src/ekf.cpp)
 # target_link_libraries(ekf ${catkin_LIBRARIES})
 # add_dependencies(ekf ${catkin_EXPORTED_TARGETS})
@@ -173,6 +177,14 @@ add_dependencies(mecanum ${catkin_EXPORTED_TARGETS})
 add_library(vision src/vision.cpp)
 target_link_libraries(vision ${catkin_LIBRARIES})
 add_dependencies(vision ${catkin_EXPORTED_TARGETS})
+
+add_library(turn_left_right src/turn_left_right.cpp)
+target_link_libraries(turn_left_right wheel vision)
+add_dependencies(turn_left_right ${catkin_EXPORTED_TARGETS})
+
+add_library(detect src/detect.cpp)
+target_link_libraries(detect wheel vision)
+add_dependencies(detect ${catkin_EXPORTED_TARGETS})
 
 add_library(stage1 src/stage1.cpp)
 target_link_libraries(stage1 mecanum scara vision)
@@ -187,7 +199,7 @@ target_link_libraries(stage3 mecanum scara)
 add_dependencies(stage3 ${catkin_EXPORTED_TARGETS})
 
 add_executable(run src/run.cpp)
-target_link_libraries(run stage1 stage2 stage3)
+target_link_libraries(run turn_left_right detect)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})
 
 add_executable(testing src/testing.cpp)

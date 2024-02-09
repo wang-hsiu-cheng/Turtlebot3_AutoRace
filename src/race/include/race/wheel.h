@@ -3,6 +3,7 @@
 
 #include "ros/ros.h"
 #include <iostream>
+#include <vector>
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/Point.h>
 #include "yaml-cpp/yaml.h"
@@ -20,6 +21,9 @@ namespace WHEEL
     void init(ros::NodeHandle nh);
     void callback(const geometry_msgs::Point::ConstPtr &vel);
 
+    // void move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right);
+    void stop();
+    void move_front(int length);
     void moveTo(double x_cor, double y_cor, double z_cor);
     void moveUP(double x_cor, double y_cor, double z_cor);
 

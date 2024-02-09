@@ -41,10 +41,10 @@ void WHEEL::callback(const geometry_msgs::Point::ConstPtr &vel)
 
     data_check = true;
 }
-void WHEEL::move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right)
-{
-    // determine where should wheel move to.
-}
+// void WHEEL::move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right)
+// {
+//     // determine where should wheel move to.
+// }
 void WHEEL::move_front(int length)
 {
     // publish velocity and integrate the length that robot run.

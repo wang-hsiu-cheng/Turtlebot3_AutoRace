@@ -29,6 +29,14 @@ namespace VISION
 
     void E_image(void);    // 辨識E
     void CTFL_image(void); // 辨識T、L
+    void road_line_image();
+    void green_light_image();
+    void warning_sign_image();
+    void turn_sign_image();
+    void stop_sign_image();
+    void parking_sign_image();
+    void tunnel_sign_image();
+    void fance_image();
     void tf(void);         // 座標轉換
 
     void taking_photo(void); // 自動拍攝
