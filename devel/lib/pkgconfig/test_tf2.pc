@@ -1,0 +1,8 @@
+prefix=/home/twang/Turtlebot3_AutoRace/devel
+
+Name: test_tf2
+Description: Description of test_tf2
+Version: 0.7.7
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
