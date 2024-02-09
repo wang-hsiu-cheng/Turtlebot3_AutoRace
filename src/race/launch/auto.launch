@@ -1,5 +1,5 @@
 <launch>    
-    <param name="reset_state" type="int" value="0" />
+    <param name="reset_state" type="bool" value="true" />
     
     <node name="run" pkg="race" type="run" output="screen" respawn="true" respawn_delay="1" />
         <param name="SCARA_MODE" type="bool" value="false" />
@@ -48,8 +48,8 @@
         
         <rosparam>
             require:
-                publishers: [ mecanum_fromSTM, reset_fromSTM, scaraflag_fromSTM ]
-                subscribers: [ mecanum_toSTM, intake_toSTM, scara_toSTM ]
+                publishers: [ wheel_fromSTM, reset_fromSTM, scaraflag_fromSTM ]
+                subscribers: [ wheel_toSTM, intake_toSTM, scara_toSTM ]
         </rosparam> 
     </node>
 

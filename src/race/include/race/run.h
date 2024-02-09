@@ -2,14 +2,19 @@
 #define _RUN_H_
 
 #include "race/stage1.h"
-#include "race/stage2.h"
-#include "race/stage3.h"
+// #include "race/stage2.h"
+// #include "race/stage3.h"
+#include "race/detect.h"
+#include "race/turn_left_right.h"
+#include "race/parking.h"
 
 // #include "race/imu.h"
 // #include "race/ekf.h"
 // #include "race/microswitch.h"
 #include "race/vision.h"
+#include "race/wheel.h"
 
-int reset_state = 0;
+bool reset_state = true;
+int level = 0;
 
 #endif
