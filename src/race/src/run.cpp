@@ -70,7 +70,7 @@ void race_levels()
     // default:
     //     break;
     // }
-    VISION::green_light_image();
+    VISION::taking_photo(1); // green_light_image
     level++;
     road_line_detect(1);
     level++;
@@ -83,7 +83,7 @@ void race_levels()
     // parking_script();
     road_line_detect(3);
     level++;
-    VISION::fance_image();
+    VISION::taking_photo(6); // fance_image
     road_line_detect(4);
     level++;
     // navigation_system();

@@ -2,29 +2,30 @@
 
 void road_line_detect(int sign_number)
 {
-    VISION::road_line_image();
-    // WHEEL::move(VISION::point_left, VISION::vector_left, VISION::point_right, VISION::vector_right);
+    double x, y, z;
+    VISION::taking_photo(0);
+    WHEEL::moveTo(x, y, z);
     switch (sign_number)
     {
     case 1:
-        VISION::warning_sign_image();
+        VISION::taking_photo(2); // warning_sign_image
         break;
     case 2:
-        VISION::parking_sign_image();
+        VISION::taking_photo(4); // parking_sign_image
         break;
     case 3:
-        VISION::stop_sign_image();
+        VISION::taking_photo(5); // stop_sign_image
         break;
     case 4:
-        VISION::tunnel_sign_image();
+        VISION::taking_photo(7); // tunnel_sign_image
         break;
     default:
         break;
     }
-    if (VISION::is_sign_exist)
+    if (VISION::isDetected)
     {
         WHEEL::stop();
-        VISION::is_sign_exist = false;
+        VISION::isDetected = false;
         return;
     }
 }
