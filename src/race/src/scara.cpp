@@ -37,7 +37,7 @@ void SCARA::tel_1(void){
     /* 定點拍照*/
     printf("    SCARA::movingTo(-330, 0, 2) \n");
     SCARA::movingTo(-330, 0, 2);
-    VISION::taking_photo();
+    VISION::taking_photo(10);
     
     /* 辨識*/
     VISION::E_image();
@@ -50,7 +50,7 @@ void SCARA::tel_1(void){
     SCARA::movingTo(-290, 0, 2);
     printf("    SCARA::movingTo(-290, 0, 2) \n");
     SCARA::movingTo(-330, 0, 2);
-    VISION::taking_photo();
+    VISION::taking_photo(10);
     
     /* 辨識*/
     VISION::CTFL_image();
@@ -62,7 +62,7 @@ void SCARA::tel_1(void){
 void SCARA::tel_2(void){
     /* 定點拍照*/
     SCARA::movingTo(-330, 0, 2);
-    VISION::taking_photo();
+    VISION::taking_photo(10);
 
     /* 辨識 */
     VISION::E_image();

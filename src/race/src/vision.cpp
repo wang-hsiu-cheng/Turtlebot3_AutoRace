@@ -112,52 +112,52 @@ Mat VISION::FiltGraph(Mat img, char colorCode)
     {
     case 'g':
     { // green range
-        int hue_m = 62;
-        int hue_M = 88;
-        int sat_m = 60;
-        int sat_M = 255;
-        int val_m = 137;
-        int val_M = 255;
+        VISION::hue_m = 62;
+        VISION::hue_M = 88;
+        VISION::sat_m = 60;
+        VISION::sat_M = 255;
+        VISION::val_m = 137;
+        VISION::val_M = 255;
     }
     break;
     case 'w':
     { // white range
-        int hue_m = 0;
-        int hue_M = 255;
-        int sat_m = 0;
-        int sat_M = 102;
-        int val_m = 147;
-        int val_M = 255;
+        VISION::hue_m = 0;
+        VISION::hue_M = 255;
+        VISION::sat_m = 0;
+        VISION::sat_M = 102;
+        VISION::val_m = 147;
+        VISION::val_M = 255;
     }
     break;
     case 'b':
     { // blue range
-        int hue_m = 100;
-        int hue_M = 137;
-        int sat_m = 151;
-        int sat_M = 255;
-        int val_m = 147;
-        int val_M = 255;
+        VISION::hue_m = 100;
+        VISION::hue_M = 137;
+        VISION::sat_m = 151;
+        VISION::sat_M = 255;
+        VISION::val_m = 147;
+        VISION::val_M = 255;
     }
     break;
     case 't':
     { // blue turn sign(draw) range
-        int hue_m = 89;
-        int hue_M = 123;
-        int sat_m = 132;
-        int sat_M = 255;
-        int val_m = 10;
-        int val_M = 255;
+        VISION::hue_m = 89;
+        VISION::hue_M = 123;
+        VISION::sat_m = 132;
+        VISION::sat_M = 255;
+        VISION::val_m = 10;
+        VISION::val_M = 255;
     }
     break;
     case 'l':
     { // road line(picture) range
-        int hue_m = 0;
-        int hue_M = 173;
-        int sat_m = 0;
-        int sat_M = 190;
-        int val_m = 191;
-        int val_M = 226;
+        VISION::hue_m = 0;
+        VISION::hue_M = 173;
+        VISION::sat_m = 0;
+        VISION::sat_M = 190;
+        VISION::val_m = 191;
+        VISION::val_M = 226;
     }
     break;
 
@@ -423,7 +423,8 @@ Mat VISION::E_filter(Mat img)
     //     bitwise_and(img, img, result, mask);
     //     // imshow("Letter Filted", result);
     //     // waitKey(0);
-    //     return result;
+    //      return result;
+    return img;
 }
 void VISION::E_contour(Mat original_image, Mat image, double epsilon,
                        int minContour, int maxContour, double lowerBondArea)
@@ -560,6 +561,7 @@ Mat VISION::CTFL_filter(Mat img)
     //     bitwise_and(img, img, result, mask);
     //     imshow("Letter Filted", result);
     //     return result;
+    return img;
 }
 void VISION::CTFL_contour(Mat original_image, Mat image, double epsilon,
                           int minContour, int maxContour, double lowerBondArea)
@@ -721,6 +723,7 @@ Point2f VISION::nearest_scara_point(Point2f input)
     //     temp.x = (COR[min].x_scara * VISION::x_tf_cali) + x_tf_intercept;
     //     temp.y = (COR[min].y_scara * VISION::y_tf_cali) + y_tf_intercept;
     //     return temp;
+    return input;
 }
 void VISION::tf(void)
 {

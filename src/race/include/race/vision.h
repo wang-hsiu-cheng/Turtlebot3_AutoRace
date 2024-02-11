@@ -55,6 +55,12 @@ namespace VISION
                       int minContour, int maxContour, double lowerBondArea);
 
     /* launch param*/
+    int hue_m = 0;
+    int hue_M = 255;
+    int sat_m = 0;
+    int sat_M = 255;
+    int val_m = 0;
+    int val_M = 255;
     double x_tf_cali = 0.9;
     double y_tf_cali = 0.9;
     double x_tf_intercept = -5;

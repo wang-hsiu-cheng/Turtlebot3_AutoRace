@@ -37,7 +37,7 @@ int main(int argc, char **argv){
         case 3:
             printf("    SCARA::movingTo(-330, 0, 2) \n");
             SCARA::movingTo(-330, 0, 2);
-            VISION::taking_photo();
+            VISION::taking_photo(10);
             
             /* 辨識*/
             VISION::E_image();
@@ -48,7 +48,7 @@ int main(int argc, char **argv){
         case 4:
             printf("    SCARA::movingTo(-330, 0, 2) \n");
             SCARA::movingTo(-330, 0, 2);
-            VISION::taking_photo();
+            VISION::taking_photo(10);
             
             /* 辨識*/
             VISION::CTFL_image();
