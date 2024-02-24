@@ -178,12 +178,16 @@ add_library(vision src/vision.cpp)
 target_link_libraries(vision ${catkin_LIBRARIES})
 add_dependencies(vision ${catkin_EXPORTED_TARGETS})
 
+add_library(roadCamera src/roadCamera.cpp)
+target_link_libraries(roadCamera ${catkin_LIBRARIES})
+add_dependencies(roadCamera ${catkin_EXPORTED_TARGETS})
+
 add_library(turn_left_right src/turn_left_right.cpp)
 target_link_libraries(turn_left_right wheel vision)
 add_dependencies(turn_left_right ${catkin_EXPORTED_TARGETS})
 
 add_library(detect src/detect.cpp)
-target_link_libraries(detect wheel vision)
+target_link_libraries(detect wheel vision roadCamera)
 add_dependencies(detect ${catkin_EXPORTED_TARGETS})
 
 add_library(stage1 src/stage1.cpp)
