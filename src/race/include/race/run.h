@@ -1,20 +1,18 @@
 #ifndef _RUN_H_
 #define _RUN_H_
 
-#include "race/stage1.h"
-// #include "race/stage2.h"
-// #include "race/stage3.h"
 #include "race/detect.h"
 #include "race/turn_left_right.h"
 #include "race/parking.h"
 
-// #include "race/imu.h"
-// #include "race/ekf.h"
-// #include "race/microswitch.h"
 #include "race/vision.h"
 #include "race/wheel.h"
 
-bool reset_state = true;
+int init_all_sensors(ros::NodeHandle nh);
+void race_levels(int);
+
+bool data_check = false;
+int reset_state;
 int level = 0;
 
 #endif
