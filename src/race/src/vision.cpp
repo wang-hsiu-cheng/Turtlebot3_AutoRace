@@ -2,9 +2,6 @@
 #include "math.h"
 #include "ros/ros.h"
 
-// #define PATH "/home/ditrobotics/TEL/src/race/src/auto.png"
-// #define csv_file "/home/ditrobotics/TEL/src/race/src/coordinate.csv"
-
 void VISION::init(ros::NodeHandle nh)
 {
     nh.getParam("x_tf_cali", VISION::x_tf_cali);
@@ -18,13 +15,8 @@ void VISION::init(ros::NodeHandle nh)
     nh.getParam("pixel_Ymin", VISION::pixel_Ymin);
 }
 
-void VISION::taking_photo(int imageName)
+void VISION::takingPhoto(int imageName)
 {
-    double epsilon = 6.5;      // DP Algorithm 的參數
-    int minContour = 6;        // 邊數小於 minContour 會被遮罩
-    int maxContour = 30;       // 邊數大於 maxContour 會遮罩
-    double lowerBondArea = 20; // 面積低於 lowerBondArea 的輪廓會被遮罩
-
     VideoCapture cap(0); // 鏡頭編號依序從 012...
     Mat img;
     bool isPrinted = false;
@@ -33,51 +25,49 @@ void VISION::taking_photo(int imageName)
     { // 確認有連線到該編號的鏡頭
         cout << "Cannot open capture\n";
     }
-    while (!isDetected)
+    bool ret = cap.read(img);
+    if (!ret)
     {
-        bool ret = cap.read(img);
-        if (!ret)
-        {
-            cout << "Cant receive frame\n";
-            break;
-        }
-
-        Mat original_image = img.clone();
-        switch (imageName)
-        {
-        case 0:
-            img = VISION::FiltGraph(img, 'l');
-            VISION::road_line_image(original_image, img, isPrinted);
-            break;
-        case 1:
-            VISION::green_light_image();
-            break;
-        case 2:
-            VISION::warning_sign_image();
-            break;
-        case 3:
-            img = VISION::FiltGraph(img, 't');
-            VISION::turn_sign_image(original_image, img, epsilon, minContour, maxContour, lowerBondArea);
-            break;
-        case 4:
-            VISION::parking_sign_image();
-            break;
-        case 5:
-            VISION::stop_sign_image();
-            break;
-        case 6:
-            VISION::fance_image();
-            break;
-        case 7:
-            VISION::tunnel_sign_image();
-            break;
-
-        default:
-            break;
-        }
-        if (waitKey(1) == 'q')
-            break;
+        cout << "Cant receive frame\n";
+        break;
     }
+
+    Mat original_image = img.clone();
+    switch (imageName)
+    {
+    case 0:
+        VISION::clock++;
+        if (clock == 100)
+            VISION::isDetected = true;
+        break;
+    case 1:
+        VISION::green_light_image();
+        break;
+    case 2:
+        VISION::warning_sign_image();
+        break;
+    case 3:
+        img = VISION::filtGraph(img, 't');
+        VISION::turnSignImage(original_image, img);
+        break;
+    case 4:
+        VISION::parking_sign_image();
+        break;
+    case 5:
+        VISION::stop_sign_image();
+        break;
+    case 6:
+        VISION::fance_image();
+        break;
+    case 7:
+        VISION::tunnel_sign_image();
+        break;
+
+    default:
+        break;
+    }
+    if (waitKey(1) == 'q')
+        break;
     return;
 }
 void VISION::green_light_image()
@@ -103,7 +93,7 @@ void VISION::parking_sign_image()
 void VISION::tunnel_sign_image()
 {
 }
-Mat VISION::FiltGraph(Mat img, char colorCode)
+Mat VISION::filtGraph(Mat img, char colorCode)
 {
     Mat img_hsv, mask, result;
     cvtColor(img, img_hsv, COLOR_BGR2HSV);
@@ -174,8 +164,13 @@ Mat VISION::FiltGraph(Mat img, char colorCode)
     // imshow("Letter Filted", result);
     return result;
 }
-void VISION::turn_sign_image(Mat original_image, Mat image, double epsilon, int minContour, int maxContour, double lowerBondArea)
+void VISION::turnSignImage(Mat original_image, Mat image)
 {
+    double epsilon = 6.5;      // DP Algorithm 的參數
+    int minContour = 6;        // 邊數小於 minContour 會被遮罩
+    int maxContour = 30;       // 邊數大於 maxContour 會遮罩
+    double lowerBondArea = 20; // 面積低於 lowerBondArea 的輪廓會被遮罩
+
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);
 
@@ -287,7 +282,10 @@ void VISION::turn_sign_image(Mat original_image, Mat image, double epsilon, int 
         string direction = (left_pt_count < right_pt_count) ? "turn left" : "turn right";
         putText(original_image, direction, Point(10, 25), 0, 0.8, Scalar(0, 255, 0), 1, 1, false);
     }
-    VISION::isDetected = true;
+    if (left_pt_count < 5)
+        VISION::isDetected = false;
+    else
+        VISION::isDetected = true;
     // imshow("D", dp_image_2);
     // imshow("camera", original_image);
 }
@@ -367,6 +365,43 @@ void VISION::road_line_image(Mat src, Mat &ROI, bool isPrinted)
     }
 }
 
+// void Callback(const std_msgs::Int64::ConstPtr &msg)
+// {
+//     std::cout << "msg.data = " << msg->data << "\n";
+//     VISION::lastImageName = imageName;
+//     VISION::imageName = msg->data;
+//     if ((lastImageName != imageName && imageName != 100) && !VISION::isDetected)
+//     {
+//         VISION::takingPhoto(imageName);
+//         pub.publish(false);
+//     }
+//     else if ((lastImageName == imageName || imageName == 100) && !VISION::isDetected)
+//     {
+//         pub.publish(false);
+//     }
+//     else
+//     {
+//         pub.publish(true);
+//     }
+// }
+// int main(int argc, char **argv)
+// {
+//     ros::init(argc, argv, "vision");
+//     ros::NodeHandle nh;
+
+//     VISION::init(ros::NodeHandle nh);
+
+//     ros::Subscriber sub = nh.subscribe("camera", 10, Callback);
+//     ros::Publisher pub = nh.advertise<bool>("run_fromCamera", 10);
+//     ros::Rate loop_rate(1);
+
+//     while (ros::ok())
+//     {
+//         ros::spinOnce();
+//         loop_rate.sleep();
+//     }
+//     return 0;
+// }
 void VISION::E_image(void)
 {
     //     const double epsilon = 5;       // DP Algorithm 的參數
