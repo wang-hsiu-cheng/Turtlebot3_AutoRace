@@ -6,6 +6,6 @@
 
 // #define stage1_yaml "/home/ditrobotics/TEL/src/race/path/stage1.yaml"
 
-void turn_script();
+void turnScript();
 
 #endif

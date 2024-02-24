@@ -1,6 +1,6 @@
 #include "race/turn_left_right.h"
 
-void turn_script(void)
+void turnScript(void)
 {
     ROS_INFO("\n==TURN SCRIPT==\n");
     double x;
@@ -11,6 +11,6 @@ void turn_script(void)
     do
     {
         WHEEL::moveTo(x, y, z);
-        VISION::taking_photo(3);
+        VISION::takingPhoto(3);
     } while (!VISION::isDetected);
 }
