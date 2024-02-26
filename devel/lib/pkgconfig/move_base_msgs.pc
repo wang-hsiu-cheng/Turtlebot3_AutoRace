@@ -1,8 +1,8 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
+prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
 
 Name: move_base_msgs
 Description: Description of move_base_msgs
 Version: 1.14.1
-Cflags: -I/home/twang/Turtlebot3_AutoRace/devel/include
+Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel/include
 Libs: -L${prefix}/lib 
 Requires: actionlib_msgs geometry_msgs message_runtime

@@ -1,8 +1,8 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
+prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
 
 Name: global_planner
 Description: Description of global_planner
 Version: 1.17.3
-Cflags: -I/home/twang/Turtlebot3_AutoRace/devel/include -I/home/twang/Turtlebot3_AutoRace/src/navigation/global_planner/include
+Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel/include -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/navigation/global_planner/include
 Libs: -L${prefix}/lib -lglobal_planner
 Requires: costmap_2d dynamic_reconfigure geometry_msgs nav_core navfn nav_msgs pluginlib roscpp tf2_ros

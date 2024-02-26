@@ -1,8 +1,8 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
+prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
 
 Name: map_msgs
 Description: Description of map_msgs
 Version: 1.14.1
-Cflags: -I/home/twang/Turtlebot3_AutoRace/devel/include
+Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel/include
 Libs: -L${prefix}/lib 
 Requires: message_runtime nav_msgs sensor_msgs std_msgs

@@ -1,8 +1,8 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
+prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
 
 Name: tf2_msgs
 Description: Description of tf2_msgs
 Version: 0.7.7
-Cflags: -I/home/twang/Turtlebot3_AutoRace/devel/include -I/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_msgs/include
+Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel/include -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_msgs/include
 Libs: -L${prefix}/lib 
 Requires: message_generation geometry_msgs actionlib_msgs
