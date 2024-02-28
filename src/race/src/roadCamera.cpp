@@ -11,20 +11,19 @@ void CAMERA1::detectRoad()
     if (!cap.isOpened())
     { // 確認有連線到該編號的鏡頭
         cout << "Cannot open capture\n";
+        return;
     }
     bool ret = cap.read(img);
-    if (!ret)
+    while (!ret)
     {
         cout << "Cant receive frame\n";
-        break;
+        ret = cap.read(img);
     }
 
     Mat originalImage = img.clone();
     img = filtGraph(img);
     roadLineImage(originalImage, img, isPrinted);
 
-    if (waitKey(1) == 'q')
-        break;
     return;
 }
 
