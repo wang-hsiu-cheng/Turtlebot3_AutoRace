@@ -1,8 +1,8 @@
-prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
+prefix=/home/twang/Turtlebot3_AutoRace/devel
 
 Name: tf2_bullet
 Description: Description of tf2_bullet
 Version: 0.7.7
-Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_bullet/include -I/usr/include/bullet
+Cflags: -I/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_bullet/include -I/usr/include/bullet
 Libs: -L${prefix}/lib 
 Requires: 

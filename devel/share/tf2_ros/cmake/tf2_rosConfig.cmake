@@ -67,14 +67,14 @@ set(tf2_ros_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("TRUE" STREQUAL "TRUE")
-  set(tf2_ros_SOURCE_PREFIX /home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_ros)
-  set(tf2_ros_DEVEL_PREFIX /home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel)
+  set(tf2_ros_SOURCE_PREFIX /home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_ros)
+  set(tf2_ros_DEVEL_PREFIX /home/twang/Turtlebot3_AutoRace/devel)
   set(tf2_ros_INSTALL_PREFIX "")
   set(tf2_ros_PREFIX ${tf2_ros_DEVEL_PREFIX})
 else()
   set(tf2_ros_SOURCE_PREFIX "")
   set(tf2_ros_DEVEL_PREFIX "")
-  set(tf2_ros_INSTALL_PREFIX /home/miffy1233/rrrrrr/Turtlebot3_AutoRace/install)
+  set(tf2_ros_INSTALL_PREFIX /home/twang/Turtlebot3_AutoRace/install)
   set(tf2_ros_PREFIX ${tf2_ros_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(tf2_ros_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_ros/include " STREQUAL " ")
+if(NOT "/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_ros/include " STREQUAL " ")
   set(tf2_ros_INCLUDE_DIRS "")
-  set(_include_dirs "/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_ros/include")
+  set(_include_dirs "/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_ros/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT "http://www.ros.org/wiki/tf2_ros " STREQUAL " ")
@@ -110,7 +110,7 @@ if(NOT "/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_ros/include
         message(FATAL_ERROR "Project 'tf2_ros' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
-      message(FATAL_ERROR "Project 'tf2_ros' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/geometry2/tf2_ros/${idir}'.  ${_report}")
+      message(FATAL_ERROR "Project 'tf2_ros' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_ros/${idir}'.  ${_report}")
     endif()
     _list_append_unique(tf2_ros_INCLUDE_DIRS ${include})
   endforeach()
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel/lib;/opt/ros/noetic/lib)
+    foreach(path /home/twang/Turtlebot3_AutoRace/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
