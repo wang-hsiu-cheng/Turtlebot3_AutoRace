@@ -76,12 +76,12 @@ void race_levels(const int state)
         return;
 
     // parking_script();
-    runAndDetectImage((int)stopSign);
 
     level++;
     if (level >= state)
         return;
 
+    runAndDetectImage((int)fance);
     // while (ros::ok() && !data_check)
     // {
     //     visionPub.publish(6);

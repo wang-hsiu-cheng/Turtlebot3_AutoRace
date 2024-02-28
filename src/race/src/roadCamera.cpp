@@ -123,6 +123,8 @@ void CAMERA1::roadLineImage(Mat src, Mat &ROI, bool isPrinted)
         // line(src, Point(B_R), Point(T_R), Scalar(0, 255, 0), 10);
         // line(src, Point(center_begin_point), Point(center_end_point), Scalar(0, 255, 255), 10);
         if (center_begin_point.y - center_end_point.y > 0)
+        {
             CAMERA1::isDetected = true;
+        }
     }
 }
