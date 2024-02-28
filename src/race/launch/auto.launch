@@ -1,5 +1,5 @@
 <launch>    
-    <param name="reset_state" type="bool" value="true" />
+    <param name="reset_state" type="int" value="0" />
     
     <node name="run" pkg="race" type="run" output="screen" respawn="true" respawn_delay="1" />
         <param name="SCARA_MODE" type="bool" value="false" />

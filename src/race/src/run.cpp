@@ -1,94 +1,110 @@
 #include "race/run.h"
 
-int init_all_sensors(ros::NodeHandle nh);
-void race_levels();
+enum ImageName
+{
+    nothing,
+    trafficLight,
+    warningSign,
+    turnSign,
+    parkingSign,
+    stopSign,
+    fance,
+    tunnelSign
+};
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "run");
     ros::NodeHandle nh;
+    // ros::Publisher visionPub = nh.advertise<std_msgs::Int64>("camera", 10);
+    // ros::Subscriber visionSub = nh.subscribe("run_fromCamera", 1, callback);
 
     nh.getParam("reset_state", reset_state);
     ROS_INFO("State Now: %d", reset_state);
 
     level = init_all_sensors(nh);
-    while (level < 9)
+
+    if (reset_state == 0)
     {
-        if (reset_state)
-        {
-            while (nh.ok())
-                ros::spinOnce();
-        }
-        else
-        {
-            race_levels();
-        }
+        while (nh.ok())
+            ros::spinOnce();
     }
+    else
+    {
+        race_levels(reset_state);
+    }
+
     return EXIT_SUCCESS;
 }
+// void Callback(const std_msgs::Int64::ConstPtr &msg)
+// {
+//     std::cout << "msg.data = " << msg->data << "\n";
+//     data_check = msg->data;
+// }
 
-void race_levels()
+void race_levels(const int state)
 {
-    // switch (level)
+    // while (ros::ok() && !data_check)
     // {
-    // case 1:
-    //     VISION::green_light_image();
-    //     level++;
-    //     break;
-    // case 2:
-    //     road_line_detect(1);
-    //     level++;
-    //     break;
-    // case 3:
-    //     turn_script();
-    //     road_line_detect(1);
-    //     level++;
-    //     break;
-    // case 4:
-    //     avoid_wall_script();
-    //     road_line_detect(2);
-    //     level++;
-    //     break;
-    // case 5:
-    //     parking_script();
-    //     road_line_detect(3);
-    //     level++;
-    //     break;
-    // case 6:
-    //     VISION::fance_image();
-    //     road_line_detect(4);
-    //     level++;
-    //     break;
-    // case 7:
-    //     navigation_system();
-    //     level++;
-    //     break;
-    // case 8:
-    //     road_line_detect(0);
-    //     level++;
-    //     break;
-    // default:
-    //     break;
+    //     visionPub.publish(1);
+    //     ros::spinOnce();
     // }
-    VISION::green_light_image();
+    // data_check = !data_check;
+    do
+    {
+        VISION::takingPhoto((int)trafficLight); // green_light_image
+    } while (!VISION::isDetected);
+    VISION::isDetected = !VISION::isDetected;
+    runAndDetectImage((int)warningSign);
+
     level++;
-    road_line_detect(1);
+    if (level >= state)
+        return;
+
+    turnScript();
+    runAndDetectImage((int)warningSign);
+
     level++;
-    turn_script();
-    road_line_detect(1);
-    level++;
+    if (level >= state)
+        return;
+
     // avoid_wall_script();
-    road_line_detect(2);
+    runAndDetectImage((int)parkingSign);
+
     level++;
+    if (level >= state)
+        return;
+
     // parking_script();
-    road_line_detect(3);
+
     level++;
-    VISION::fance_image();
-    road_line_detect(4);
+    if (level >= state)
+        return;
+
+    runAndDetectImage((int)fance);
+    // while (ros::ok() && !data_check)
+    // {
+    //     visionPub.publish(6);
+    //     ros::spinOnce();
+    // }
+    // data_check = !data_check;
+    do
+    {
+        VISION::takingPhoto((int)fance); // fance_image
+    } while (!VISION::isDetected);
+    VISION::isDetected = !VISION::isDetected;
+    runAndDetectImage((int)tunnelSign);
+
     level++;
+    if (level >= state)
+        return;
+
     // navigation_system();
-    road_line_detect(0);
+    runAndDetectImage((int)nothing);
+
     level++;
+    if (level >= state)
+        return;
 }
 
 int init_all_sensors(ros::NodeHandle nh)
@@ -97,42 +113,3 @@ int init_all_sensors(ros::NodeHandle nh)
     // IMU::init();
     return 1;
 }
-
-// #include "race/run.h"
-
-// void init_all_sensors(ros::NodeHandle nh);
-
-// int main(int argc, char **argv){
-//     ros::init(argc, argv, "run");
-//     ros::NodeHandle nh;
-
-//     nh.getParam("reset_state", reset_state);
-//     ROS_INFO("State Now: %d", reset_state);
-
-//     init_all_sensors(nh);
-
-//     switch(reset_state){
-//         case 0:
-//             while(nh.ok()) ros::spinOnce();
-
-//         case 1:
-//             run1(); run2(); run3();
-//             break;
-
-//         case 2:
-//             run2(); run3();
-//             break;
-
-//         case 3:
-//             run3();
-//             break;
-//     }
-//     return EXIT_SUCCESS;
-// }
-
-// void init_all_sensors(ros::NodeHandle nh){
-//     MECANUM::init(nh);
-//     SCARA::init(nh);
-//     // SWITCH::init();
-//     // IMU::init();
-// }

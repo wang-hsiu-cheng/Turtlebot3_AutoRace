@@ -1,16 +1,19 @@
 #include "race/turn_left_right.h"
 
-void turn_script(void)
+void turnScript(void)
 {
     ROS_INFO("\n==TURN SCRIPT==\n");
     double x;
     double y;
     double z;
-    WHEEL::moveTo(x, y, z);
-    // WHEEL::turn('l');
+    WHEEL::moveTo(x, y, z); // straight forward
+    WHEEL::moveTo(x, y, z); // turn left
     do
     {
-        WHEEL::moveTo(x, y, z);
-        VISION::turn_sign_image();
-    } while (!VISION::is_sign_exist);
+        WHEEL::moveTo(x, y, z); // straight forward for a while
+        VISION::takingPhoto(3);
+    } while (!VISION::isDetected);
+    VISION::isDetected = !VISION::isDetected;
+
+    return;
 }

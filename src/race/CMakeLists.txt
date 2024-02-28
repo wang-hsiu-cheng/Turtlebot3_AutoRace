@@ -154,10 +154,6 @@ include
 # target_link_libraries(imu ${catkin_LIBRARIES})
 # add_dependencies(imu ${catkin_EXPORTED_TARGETS})
 
-add_library(scara src/scara.cpp)
-target_link_libraries(scara vision ${catkin_LIBRARIES})
-add_dependencies(scara ${catkin_EXPORTED_TARGETS})
-
 # add_library(microswitch src/microswitch.cpp)
 # target_link_libraries(microswitch ${catkin_LIBRARIES})
 # add_dependencies(microswitch ${catkin_EXPORTED_TARGETS})
@@ -178,16 +174,20 @@ add_library(vision src/vision.cpp)
 target_link_libraries(vision ${catkin_LIBRARIES})
 add_dependencies(vision ${catkin_EXPORTED_TARGETS})
 
+add_library(roadCamera src/roadCamera.cpp)
+target_link_libraries(roadCamera ${catkin_LIBRARIES})
+add_dependencies(roadCamera ${catkin_EXPORTED_TARGETS})
+
 add_library(turn_left_right src/turn_left_right.cpp)
 target_link_libraries(turn_left_right wheel vision)
 add_dependencies(turn_left_right ${catkin_EXPORTED_TARGETS})
 
 add_library(detect src/detect.cpp)
-target_link_libraries(detect wheel vision)
+target_link_libraries(detect wheel vision roadCamera)
 add_dependencies(detect ${catkin_EXPORTED_TARGETS})
 
 add_library(stage1 src/stage1.cpp)
-target_link_libraries(stage1 mecanum scara vision)
+target_link_libraries(stage1 mecanum vision)
 add_dependencies(stage1 ${catkin_EXPORTED_TARGETS})
 
 add_library(stage2 src/stage2.cpp)
@@ -195,7 +195,7 @@ target_link_libraries(stage2 mecanum)
 add_dependencies(stage2 ${catkin_EXPORTED_TARGETS})
 
 add_library(stage3 src/stage3.cpp)
-target_link_libraries(stage3 mecanum scara)
+target_link_libraries(stage3 mecanum)
 add_dependencies(stage3 ${catkin_EXPORTED_TARGETS})
 
 add_executable(run src/run.cpp)
@@ -203,7 +203,7 @@ target_link_libraries(run turn_left_right detect)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})
 
 add_executable(testing src/testing.cpp)
-target_link_libraries(testing mecanum vision scara ${catkin_LIBRARIES})
+target_link_libraries(testing mecanum vision ${catkin_LIBRARIES})
 add_dependencies(testing ${OpenCV_LIBS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(reset src/reset.cpp)

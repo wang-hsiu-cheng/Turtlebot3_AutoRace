@@ -2,12 +2,12 @@
 #include "race/mecanum.h"
 #include "race/vision.h"
 #include "race/microswitch.h"
-#include "race/scara.h"
+// #include "race/scara.h"
 
 
 void init_all_sensors(ros::NodeHandle nh){
     MECANUM::init(nh);
-    SCARA::init(nh);
+    // SCARA::init(nh);
     VISION::init(nh);
 }
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv){
 
     switch(test_phase){
         case 1:
-            SCARA::tel_1();
+            // SCARA::tel_1();
             break;
 
 
@@ -30,30 +30,30 @@ int main(int argc, char **argv){
                 double x,y,z;
                 printf("enter: ");
                 std::cin >>x>>y>>z;
-                SCARA::movingTo(x,y,z);
+                // SCARA::movingTo(x,y,z);
             }
             break;
 
         case 3:
-            printf("    SCARA::movingTo(-330, 0, 2) \n");
-            SCARA::movingTo(-330, 0, 2);
-            VISION::taking_photo();
+            // printf("    SCARA::movingTo(-330, 0, 2) \n");
+            // SCARA::movingTo(-330, 0, 2);
+            // VISION::taking_photo(10);
             
             /* 辨識*/
-            VISION::E_image();
-            VISION::tf();
-            SCARA::seize();
+            // VISION::E_image();
+            // VISION::tf();
+            // SCARA::seize();
             break;
 
         case 4:
             printf("    SCARA::movingTo(-330, 0, 2) \n");
-            SCARA::movingTo(-330, 0, 2);
-            VISION::taking_photo();
+            // SCARA::movingTo(-330, 0, 2);
+            // VISION::taking_photo(10);
             
             /* 辨識*/
-            VISION::CTFL_image();
-            VISION::tf();
-            SCARA::seize();
+            // VISION::CTFL_image();
+            // VISION::tf();
+            // SCARA::seize();
             break;
 
 
