@@ -49,3 +49,4 @@ And Rasbpi 4B pulls this repo.
  - 布林變數或回傳 bool 的 function 以 `is` 或 `has` 作為開頭
    - `private bool _isDied;`
    - `private bool HasBuff(){}`
+
