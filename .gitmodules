@@ -4,3 +4,6 @@
 [submodule "src/lidar1/ydlidar_ros_driver"]
 	path = src/lidar1/ydlidar_ros_driver
 	url = git@github.com:YDLIDAR/ydlidar_ros_driver.git
+[submodule "src/navigation_msgs"]
+	path = src/navigation_msgs
+	url = https://github.com/ros-planning/navigation_msgs.git
