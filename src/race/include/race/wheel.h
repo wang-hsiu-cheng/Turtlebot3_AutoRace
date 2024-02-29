@@ -1,29 +1,29 @@
-#ifndef _MECANUM_H_
-#define _MECANUM_H_
-
+#ifndef _MECANUM_H_ // could this be edited?
+#define _MECANUM_H_ // I M Afraiiiiid!
+// ******miffy edited this@0229. miffy dont know anything.
 #include "ros/ros.h"
 #include <iostream>
 #include <vector>
 #include <std_msgs/Float64.h>
-#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Twist.h> //miffy changed from Point to Twist.
 #include "yaml-cpp/yaml.h"
 
 ros::Publisher wheel_publisher; // Topic: mecanum_toSTM
-geometry_msgs::Point wheel_pub;
+geometry_msgs::Twist wheel_pub;
 
 ros::Subscriber wheel_subscriber; // Topic: mecanum_fromSTM
-geometry_msgs::Point wheel_sub;
+geometry_msgs::Twist wheel_sub;
 
 // namespace WHEEL is to distinguish it from IMU
 namespace WHEEL
 {
     bool data_check;
     void init(ros::NodeHandle nh);
-    void callback(const geometry_msgs::Point::ConstPtr &vel);
+    void callback(const geometry_msgs::Twist::ConstPtr &vel);
 
     // void move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right);
     void stop();
-    void move_front(int length);
+    void move_front(int mode, float angle_rad);
     void moveTo(double x_cor, double y_cor, double z_cor);
     void moveUP(double x_cor, double y_cor, double z_cor);
 
