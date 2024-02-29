@@ -77,9 +77,10 @@ void WHEEL::move_front(int mode, float angle_rad)
     }
     float speed_x = whole_speed*cos(angle_rad);
     float speed_y = whole_speed*sin(angle_rad);
-    while(ros::ok())
-        ros::spinOnce();
-    
+    wheel_pub.linear.x = speed_x;
+    wheel_pub.linear.y = speed_y;
+    wheel_pub.angular.z = 0;
+    wheel_publisher.publish(wheel_pub);
 
 }
 void WHEEL::stop()
