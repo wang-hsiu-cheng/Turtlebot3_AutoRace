@@ -3,14 +3,29 @@
 ## How to use
 
 ### install pkg
- - sudo apt install ros-noetic-gmapping
- - sudo apt install ros-noetic-map-server
- - sudo apt install ros-noetic-navigation
+ - `sudo apt install ros-noetic-gmapping`
+ - `sudo apt install ros-noetic-map-server`
+ - `sudo apt install ros-noetic-navigation`
 
 ### environment
 This repo is recommended pushing From WSL Ubuntu20.04.  
 And Rasbpi 4B pulls this repo.
 
+## About Testing
+
+### nevigation stack testing
+- `export TURTLEBOT3_MODEL=burger`
+- `roslaunch turtlebot3_gazebo turtlebot3_world.launch`
+- open new terminal
+- `source devel/setup.bash`
+- `roslaunch tb3_navigation move_base.launch`
+
+### main program missions flow testing
+- run testing node(not ready yet)
+
+### camera testing
+- [check out this repo.](https://github.com/wang-hsiu-cheng/openCV)
+- The original version of the openCV programs used in this project are there.
 
 ## Development rules and Matters needing attention
 
