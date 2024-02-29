@@ -1,0 +1,8 @@
+prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
+
+Name: dynamixel_sdk
+Description: Description of dynamixel_sdk
+Version: 3.7.51
+Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/DynamixelSDK/ros/dynamixel_sdk/include
+Libs: -L${prefix}/lib -ldynamixel_sdk
+Requires: roscpp rospy
