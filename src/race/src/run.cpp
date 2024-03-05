@@ -1,7 +1,7 @@
 #include "race/run.h"
 #include <cstdlib>                     // for system()
 #include <geometry_msgs/PoseStamped.h> // goal publish msg
-#include <actionlib>
+#include <actionlib/server/simple_action_server.h>
 #include <time.h>
 #include <move_base_msgs/MoveBaseActionResult.h>
 
@@ -38,6 +38,7 @@ int main(int argc, char **argv)
     // ros::Subscriber visionSub = nh.subscribe("run_fromCamera", 1, callback);
 
     nh.getParam("reset_state", reset_state);
+    nh.getParam("begin_state", begin_state);
     ROS_INFO("State Now: %d", reset_state);
 
     level = init_all_sensors(nh);
@@ -49,7 +50,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        race_levels(reset_state);
+        race_levels(begin_state, reset_state, nh);
     }
 
     return EXIT_SUCCESS;
@@ -60,70 +61,82 @@ int main(int argc, char **argv)
 //     data_check = msg->data;
 // }
 
-void race_levels(const int state)
+void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
 {
-    // while (ros::ok() && !data_check)
-    // {
-    //     visionPub.publish(1);
-    //     ros::spinOnce();
-    // }
-    // data_check = !data_check;
-    do
+    level = begin_state;
+    if (level == 1)
     {
-        VISION::takingPhoto((int)trafficLight); // green_light_image
-    } while (!VISION::isDetected);
-    VISION::isDetected = !VISION::isDetected;
-    runAndDetectImage((int)warningSign);
+        // while (ros::ok() && !data_check)
+        // {
+        //     visionPub.publish(1);
+        //     ros::spinOnce();
+        // }
+        // data_check = !data_check;
+        do
+        {
+            VISION::takingPhoto((int)trafficLight); // green_light_image
+        } while (!VISION::isDetected);
+        VISION::isDetected = !VISION::isDetected;
+        runAndDetectImage((int)warningSign);
 
-    level++;
-    if (level >= state)
-        return;
-
-    turnScript();
-    runAndDetectImage((int)warningSign);
-
-    level++;
-    if (level >= state)
-        return;
-
-    // avoid_wall_script();
-    runAndDetectImage((int)parkingSign);
-
-    level++;
-    if (level >= state)
-        return;
-
-    // parking_script();
-
-    level++;
-    if (level >= state)
-        return;
-
-    runAndDetectImage((int)fance);
-    // while (ros::ok() && !data_check)
-    // {
-    //     visionPub.publish(6);
-    //     ros::spinOnce();
-    // }
-    // data_check = !data_check;
-    do
+        if (level >= end_state)
+            return;
+        level++;
+    }
+    if (level == 2)
     {
-        VISION::takingPhoto((int)fance); // fance_image
-    } while (!VISION::isDetected);
-    VISION::isDetected = !VISION::isDetected;
-    runAndDetectImage((int)tunnelSign);
+        turnScript();
+        runAndDetectImage((int)warningSign);
+        
+        if (level >= end_state)
+            return;
+        level++;
+    }
+    if (level == 3)
+    {
+        // avoid_wall_script();
+        runAndDetectImage((int)parkingSign);
 
-    level++;
-    if (level >= state)
+        if (level >= end_state)
+            return;
+        level++;
+    }
+    if (level == 4)
+    {
+        // parking_script();
+
+        if (level >= end_state)
+            return;
+        level++;
+    }
+    if (level == 5)
+    {
+        runAndDetectImage((int)fance);
+        // while (ros::ok() && !data_check)
+        // {
+        //     visionPub.publish(6);
+        //     ros::spinOnce();
+        // }
+        // data_check = !data_check;
+        do
+        {
+            VISION::takingPhoto((int)fance); // fance_image
+        } while (!VISION::isDetected);
+        VISION::isDetected = !VISION::isDetected;
+        runAndDetectImage((int)tunnelSign);
+
+        if (level >= end_state)
+            return;
+        level++;
+    }
+    if (level == 6)
+    {
+        while (navigationSystem(nh) == 0)
+            break;
+        runAndDetectImage((int)nothing);
+
         return;
-
-    while (navigationSystem() == 0)
-        break;
-    runAndDetectImage((int)nothing);
-
-    level++;
-    if (level >= state)
-        return;
+    }
 }
 
 int init_all_sensors(ros::NodeHandle nh)
@@ -133,7 +146,7 @@ int init_all_sensors(ros::NodeHandle nh)
     return 1;
 }
 
-int navigationSystem()
+int navigationSystem(ros::NodeHandle nh)
 {
     double x;
     double y;
@@ -154,7 +167,7 @@ int navigationSystem()
     // 宣告 publisher
     ros::Publisher pubGoal = nh.advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 10);
     // Subscribe to the feedback topic
-    ros::Subscriber sub = nh.subscribe("/move_base/result", 10, goalStatusCallback);
+    ros::Subscriber sub = nh.subscribe("/move_base/result", 10, navigationSystemCallback);
 
     // 宣告一個 PoseStamped 訊息目標，並輸入終點資訊
     geometry_msgs::PoseStamped goal;

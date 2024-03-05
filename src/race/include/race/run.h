@@ -9,12 +9,13 @@
 #include "race/wheel.h"
 
 int init_all_sensors(ros::NodeHandle nh);
-void race_levels(const int);
-int navigationSystem();
+void race_levels(const int, const int, ros::NodeHandle nh);
+int navigationSystem(ros::NodeHandle nh);
 
 bool data_check = false;
 bool goalReached = false;
 int reset_state;
+int begin_state;
 int level = 0;
 
 #endif
