@@ -1,9 +1,11 @@
 #include "race/run.h"
-#include <cstdlib>                     // for system()
-#include <geometry_msgs/PoseStamped.h> // goal publish msg
-#include <actionlib/server/simple_action_server.h>
+#include <cstdlib> // for system()
+// #include <geometry_msgs/PoseStamped.h> // goal publish msg
+#include <actionlib/client/simple_action_client.h> // receive goal callback
 #include <time.h>
-#include <move_base_msgs/MoveBaseActionResult.h>
+#include <move_base_msgs/MoveBaseAction.h> // goal msgs
+
+typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 enum ImageName
 {
@@ -87,7 +89,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     {
         turnScript();
         runAndDetectImage((int)warningSign);
-        
+
         if (level >= end_state)
             return;
         level++;
@@ -164,32 +166,55 @@ int navigationSystem(ros::NodeHandle nh)
         ROS_ERROR("Failed to execute roslaunch command");
         return 1;
     }
-    // 宣告 publisher
-    ros::Publisher pubGoal = nh.advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 10);
-    // Subscribe to the feedback topic
-    ros::Subscriber sub = nh.subscribe("/move_base/result", 10, navigationSystemCallback);
-
-    // 宣告一個 PoseStamped 訊息目標，並輸入終點資訊
-    geometry_msgs::PoseStamped goal;
-    goal.header.stamp = ros::Time::now();
-    goal.header.frame_id = "map";
-    goal.pose.position.x = x;
-    goal.pose.position.y = y;
-    goal.pose.orientation.z = theta;
-
-    // publish 目標位置訊息
-    pubGoal.publish(goal);
-
-    // Spin until the goal is reached
-    ros::Rate rate(1); // Adjust the rate as needed
-    double runningTime = (double)clock() / CLOCKS_PER_SEC;
-    double endRunningTime = 100 + runningTime;
-    while (ros::ok() && !goalReached && (endRunningTime - runningTime) > 0)
+    MoveBaseClient ac("move_base", true);
+    while (!ac.waitForServer(ros::Duration(5.0)))
     {
-        ros::spinOnce();
-        rate.sleep();
-        runningTime = (double)clock() / CLOCKS_PER_SEC;
+        ROS_INFO("waiting for move_bae server come up");
     }
+    move_base_msgs::MoveBaseGOAL goal;
+    goal.target_pose.header.frame_id = "map";
+    goal.target_pose.header.stamp = ros::Time::now();
+    goal.target_pose.pose.position.x = 3.0;
+    goal.target_pose.pose.position.y = -5.0;
+    goal.target_pose.pose.orientation.w = 1.0;
+    ac.sendGoal(goal);
+    ac.waitForResult();
+    if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+    {
+        ROS_INFO("yes!");
+        goalReached = true;
+    }
+    else
+    {
+        ROS_INFO("no");
+        goalReached = false;
+    }
+    // // 宣告 publisher
+    // ros::Publisher pubGoal = nh.advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 10);
+    // // Subscribe to the feedback topic
+    // ros::Subscriber sub = nh.subscribe("/move_base/result", 10, navigationSystemCallback);
+
+    // // 宣告一個 PoseStamped 訊息目標，並輸入終點資訊
+    // geometry_msgs::PoseStamped goal;
+    // goal.header.stamp = ros::Time::now();
+    // goal.header.frame_id = "map";
+    // goal.pose.position.x = x;
+    // goal.pose.position.y = y;
+    // goal.pose.orientation.z = theta;
+
+    // // publish 目標位置訊息
+    // pubGoal.publish(goal);
+
+    // // Spin until the goal is reached
+    // ros::Rate rate(1); // Adjust the rate as needed
+    // double runningTime = (double)clock() / CLOCKS_PER_SEC;
+    // double endRunningTime = 100 + runningTime;
+    // while (ros::ok() && !goalReached && (endRunningTime - runningTime) > 0)
+    // {
+    //     ros::spinOnce();
+    //     rate.sleep();
+    //     runningTime = (double)clock() / CLOCKS_PER_SEC;
+    // }
 
     if (goalReached)
         return 0;
