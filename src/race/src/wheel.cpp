@@ -44,12 +44,12 @@ void WHEEL::init(ros::NodeHandle nh)
 //     data_check = true;
 // }
 
-void callback(const geometry_msgs::Twist::ConstPtr& msg ) //miffy changed the message type to Twist
+void WHEEL::callback(const geometry_msgs::Twist::ConstPtr& msg ) //miffy changed the message type to Twist
 {
     //ROS_INFO("speed report: x= %f,y= %f,theta= %f",msg->linear.x,msg->linear.y,msg->angular.z);
-    wheel_sub.x=msg->linear.x;
-    wheel_sub.y=msg->linear.y;
-    wheel_sub.theta=msg->angular.z;
+    wheel_sub.linear.x=msg->linear.x;
+    wheel_sub.linear.y=msg->linear.y;
+    wheel_sub.angular.z=msg->angular.z;
 }
 // void WHEEL::move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right)
 // {
@@ -195,9 +195,9 @@ void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
                 pub_z = -max_z;
         }
 
-        wheel_pub.x = pub_x;
-        wheel_pub.y = pub_y;
-        wheel_pub.z = pub_z;
+        wheel_pub.linear.x = pub_x;
+        wheel_pub.linear.y = pub_y;
+        wheel_pub.angular.z = pub_z;
         wheel_publisher.publish(wheel_pub);
 
         /* velocity profile */
@@ -210,25 +210,25 @@ void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
 
         if (flag)
         {
-            x_now += (time_now - time_before) * (wheel_sub.x + x_vel_before) / 2;
-            y_now += (time_now - time_before) * (wheel_sub.y + y_vel_before) / 2;
-            z_now += (time_now - time_before) * (wheel_sub.z + z_vel_before) / 2;
+            x_now += (time_now - time_before) * (wheel_sub.linear.x + x_vel_before) / 2;
+            y_now += (time_now - time_before) * (wheel_sub.linear.y + y_vel_before) / 2;
+            z_now += (time_now - time_before) * (wheel_sub.angular.z + z_vel_before) / 2;
         }
         flag = true;
 
-        x_vel_before = wheel_sub.x;
-        y_vel_before = wheel_sub.y;
-        z_vel_before = wheel_sub.z;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
         time_before = time_now;
         ros::Duration(0.005).sleep();
     }
 
     // reaching goal and pub speed 0
-    while ((wheel_sub.x != 0 || wheel_sub.y != 0 || wheel_sub.z != 0) && ros::ok())
+    while ((wheel_sub.linear.x != 0 || wheel_sub.linear.y != 0 || wheel_sub.angular.z != 0) && ros::ok())
     {
-        wheel_pub.x = 0;
-        wheel_pub.y = 0;
-        wheel_pub.z = 0;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = 0;
         wheel_publisher.publish(wheel_pub);
 
         data_check = false;
@@ -337,9 +337,9 @@ void WHEEL::moveUP(double x_cor, double y_cor, double z_cor)
                 pub_z = -max_z;
         }
 
-        wheel_pub.x = pub_x;
-        wheel_pub.y = pub_y;
-        wheel_pub.z = pub_z;
+        wheel_pub.linear.x = pub_x;
+        wheel_pub.linear.y = pub_y;
+        wheel_pub.angular.z = pub_z;
         wheel_publisher.publish(wheel_pub);
 
         /* velocity profile */
@@ -352,25 +352,25 @@ void WHEEL::moveUP(double x_cor, double y_cor, double z_cor)
 
         if (flag)
         {
-            x_now += (time_now - time_before) * (wheel_sub.x + x_vel_before) / 2;
-            y_now += (time_now - time_before) * (wheel_sub.y + y_vel_before) / 2;
-            z_now += (time_now - time_before) * (wheel_sub.z + z_vel_before) / 2;
+            x_now += (time_now - time_before) * (wheel_sub.linear.x + x_vel_before) / 2;
+            y_now += (time_now - time_before) * (wheel_sub.linear.y + y_vel_before) / 2;
+            z_now += (time_now - time_before) * (wheel_sub.angular.z + z_vel_before) / 2;
         }
         flag = true;
 
-        x_vel_before = wheel_sub.x;
-        y_vel_before = wheel_sub.y;
-        z_vel_before = wheel_sub.z;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
         time_before = time_now;
         ros::Duration(0.005).sleep();
     }
 
     // reaching goal and pub speed 0
-    while ((wheel_sub.x != 0 || wheel_sub.y != 0 || wheel_sub.z != 0) && ros::ok())
+    while ((wheel_sub.linear.x != 0 || wheel_sub.linear.y != 0 || wheel_sub.angular.z != 0) && ros::ok())
     {
-        wheel_pub.x = 0;
-        wheel_pub.y = 0;
-        wheel_pub.z = 0;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = 0;
         wheel_publisher.publish(wheel_pub);
 
         data_check = false;

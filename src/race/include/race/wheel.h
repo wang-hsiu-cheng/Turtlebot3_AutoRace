@@ -1,5 +1,6 @@
-#ifndef _MECANUM_H_ // could this be edited?
-#define _MECANUM_H_ // I M Afraiiiiid!
+#ifndef _WHEEL_H_ // could this be edited?
+#define _WHEEL_H_ // I M Afraiiiiid!
+// yes! this has to be changed. or the header file may not be define. by TWang
 // ******miffy edited this@0229. miffy dont know anything.
 #include "ros/ros.h"
 #include <iostream>
@@ -19,7 +20,7 @@ namespace WHEEL
 {
     bool data_check;
     void init(ros::NodeHandle nh);
-    void callback(const geometry_msgs::Twist::ConstPtr &vel);
+    void callback(const geometry_msgs::Twist::ConstPtr &msg);
 
     // void move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right);
     void stop();
@@ -28,6 +29,11 @@ namespace WHEEL
     void moveUP(double x_cor, double y_cor, double z_cor);
 
     void readPath(std::string yaml_path);
+
+    /* param */
+    int pub_x = 0;
+    int pub_y = 0;
+    int pub_z = 0;
 
     /* roslaunch param */
     double calibration_x_intercept = 0.7669;
