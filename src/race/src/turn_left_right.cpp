@@ -6,11 +6,11 @@ void turnScript(void)
     double x;
     double y;
     double z;
-    WHEEL::moveTo(x, y, z); // straight forward
-    WHEEL::moveTo(x, y, z); // turn left
+    WHEEL::move_front(3, 0); // straight forward
+    WHEEL::move_front(0, 1.57); // turn left
     do
     {
-        WHEEL::moveTo(x, y, z); // straight forward for a while
+        WHEEL::move_front(3, 0); // straight forward for a while
         VISION::takingPhoto(3);
     } while (!VISION::isDetected);
     VISION::isDetected = !VISION::isDetected;

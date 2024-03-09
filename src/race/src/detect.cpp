@@ -8,7 +8,7 @@ void runAndDetectImage(const int sign_number)
     {
         CAMERA1::detectRoad();
         CAMERA1::isDetected = !CAMERA1::isDetected;
-        WHEEL::moveTo(x, y, z);
+        WHEEL::move_front(3, 0);
 
         VISION::takingPhoto(sign_number);
     } while (!VISION::isDetected);

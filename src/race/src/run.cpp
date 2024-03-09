@@ -149,13 +149,6 @@ int init_all_sensors(ros::NodeHandle nh)
 
 int navigationSystem(ros::NodeHandle nh)
 {
-    // double x;
-    // double y;
-    // double theta;
-    // nh.getParam("/goal_x", x);
-    // nh.getParam("/goal_y", y);
-    // nh.getParam("/goal_theta", theta);
-
     // Call roslaunch command to run your launch file
     std::string launchFilePath = "~/Turtlebot3_AutoRace/src/tb3_navigation/launch/move_base.launch"; // Replace with the path to your actual launch file
     std::string command = "roslaunch " + launchFilePath;
@@ -165,57 +158,6 @@ int navigationSystem(ros::NodeHandle nh)
         ROS_ERROR("Failed to execute roslaunch command");
         return 1;
     }
-    // MoveBaseClient ac("move_base", true);
-    // while (!ac.waitForServer(ros::Duration(5.0)))
-    // {
-    //     ROS_INFO("waiting for move_bae server come up");
-    // }
-    // ROS_INFO("Start send goal\n");
-    // move_base_msgs::MoveBaseGoal goal;
-    // goal.target_pose.header.frame_id = "map";
-    // goal.target_pose.header.stamp = ros::Time::now();
-    // goal.target_pose.pose.position.x = 1.5;
-    // goal.target_pose.pose.position.y = 0.5;
-    // goal.target_pose.pose.orientation.w = 1.0;
-    // ac.sendGoal(goal);
-    // ROS_INFO("send Nav end\n");
-    // ac.waitForResult();
-    // if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-    // {
-    //     ROS_INFO("yes!");
-    //     // goalReached = true;
-    // }
-    // else
-    // {
-    //     ROS_INFO("no");
-    //     // goalReached = false;
-    // }
-    // // // 宣告 publisher
-    // // ros::Publisher pubGoal = nh.advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 10);
-    // // // Subscribe to the feedback topic
-    // // ros::Subscriber sub = nh.subscribe("/move_base/result", 10, navigationSystemCallback);
-
-    // // // 宣告一個 PoseStamped 訊息目標，並輸入終點資訊
-    // // geometry_msgs::PoseStamped goal;
-    // // goal.header.stamp = ros::Time::now();
-    // // goal.header.frame_id = "map";
-    // // goal.pose.position.x = x;
-    // // goal.pose.position.y = y;
-    // // goal.pose.orientation.z = theta;
-
-    // // // publish 目標位置訊息
-    // // pubGoal.publish(goal);
-
-    // // // Spin until the goal is reached
-    // // ros::Rate rate(1); // Adjust the rate as needed
-    // // double runningTime = (double)clock() / CLOCKS_PER_SEC;
-    // // double endRunningTime = 100 + runningTime;
-    // // while (ros::ok() && !goalReached && (endRunningTime - runningTime) > 0)
-    // // {
-    // //     ros::spinOnce();
-    // //     rate.sleep();
-    // //     runningTime = (double)clock() / CLOCKS_PER_SEC;
-    // // }
 
     // if (goalReached)
     //     return 0;

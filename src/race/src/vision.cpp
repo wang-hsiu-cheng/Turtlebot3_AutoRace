@@ -76,6 +76,7 @@ void VISION::green_light_image()
 }
 void VISION::warning_sign_image()
 {
+    return;
     // continue detecting if sign exist.
     // if exist but not large enough, continue moving and detecting.
     // if exist and large enough, then stop detecting and return.
