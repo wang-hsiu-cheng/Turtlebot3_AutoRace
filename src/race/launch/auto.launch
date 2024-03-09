@@ -1,9 +1,8 @@
 <launch>    
-    <param name="reset_state" type="int" value="0" />
+    <param name="reset_state" type="int" value="6" />
+    <param name="begin_state" type="int" value="6" />
     
     <node name="run" pkg="race" type="run" output="screen" respawn="true" respawn_delay="1" />
-        <param name="SCARA_MODE" type="bool" value="false" />
-
         <param name="calibration_x_intercept" value="0.7669" />
         <param name="calibration_y_intercept" value="-0.0927" />
         <param name="calibration_z_intercept" value="0" />
@@ -42,7 +41,7 @@
 
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 
-    <node name="serial_server" pkg="rosserial_server" type="serial_node" output="screen" respawn="true" respawn_delay="3">
+    <!-- <node name="serial_server" pkg="rosserial_server" type="serial_node" output="screen" respawn="true" respawn_delay="3">
         <param name="port" value="/dev/ttyUSB0" />
         <param name="baud" value="115200" />
         
@@ -51,6 +50,6 @@
                 publishers: [ wheel_fromSTM, reset_fromSTM, scaraflag_fromSTM ]
                 subscribers: [ wheel_toSTM, intake_toSTM, scara_toSTM ]
         </rosparam> 
-    </node>
+    </node> -->
 
 </launch>

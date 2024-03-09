@@ -3,7 +3,6 @@
     <param name="test_phase" type="int" value="3" />
     
     <node name="testing" pkg="race" type="testing" output="screen"  required="true"/>
-        <param name="SCARA_MODE" type="bool" value="true" />
 
         <param name="calibration_x_intercept" value="0.7669" />
         <param name="calibration_y_intercept" value="-0.0927" />
