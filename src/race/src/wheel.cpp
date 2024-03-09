@@ -1,11 +1,13 @@
+#include <math.h>
 #include "race/wheel.h"
-
+// ******miffy edited this@0229. miffy dont know anything.
 // declare NodeHandle and pub/sub
 void WHEEL::init(ros::NodeHandle nh)
 {
-    wheel_publisher = nh.advertise<geometry_msgs::Point>("wheel_toSTM", 1);
+    // wheel_publisher = nh.advertise<geometry_msgs::Point>("wheel_toSTM", 1);
     wheel_subscriber = nh.subscribe("wheel_fromSTM", 1, WHEEL::callback);
 
+    wheel_publisher = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1); //miffy use newtopic to the base controller.
     nh.getParam("calibration_x_intercept", calibration_x_intercept);
     nh.getParam("calibration_y_intercept", calibration_y_intercept);
     nh.getParam("calibration_z_intercept", calibration_z_intercept);
@@ -32,27 +34,66 @@ void WHEEL::init(ros::NodeHandle nh)
     nh.getParam("z_tol_margin", z_tol_margin);
 }
 
-// encdoer callback function and publish
-void WHEEL::callback(const geometry_msgs::Point::ConstPtr &vel)
-{
-    wheel_sub.x = vel->x;
-    wheel_sub.y = vel->y;
-    wheel_sub.z = vel->z;
+// [Past way]encdoer callback function and publish
+// void WHEEL::callback(const geometry_msgs::Twist::ConstPtr &vel)
+// {
+//     wheel_sub.x = vel->x;
+//     wheel_sub.y = vel->y;
+//     wheel_sub.z = vel->z;
 
-    data_check = true;
+//     data_check = true;
+// }
+
+void WHEEL::callback(const geometry_msgs::Twist::ConstPtr& msg ) //miffy changed the message type to Twist
+{
+    //ROS_INFO("speed report: x= %f,y= %f,theta= %f",msg->linear.x,msg->linear.y,msg->angular.z);
+    wheel_sub.linear.x=msg->linear.x;
+    wheel_sub.linear.y=msg->linear.y;
+    wheel_sub.angular.z=msg->angular.z;
 }
 // void WHEEL::move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right)
 // {
 //     // determine where should wheel move to.
 // }
-void WHEEL::move_front(int length)
+void WHEEL::move_front(int mode, float angle_rad)
 {
-    // publish velocity and integrate the length that robot run.
+    // [Past reqirement] publish velocity and integrate the length that robot run.
     // if length is enough, then stop running and return.
+    // [New Requriedment-20240226] receive the declination between robot & road edge
+    float whole_speed; //set the max speed of forward dir.
+    switch (mode)//mode stands for the speed: the larger the number, the faster the cat will run.
+    {
+    case 1:
+        whole_speed=1.5;
+        break;
+    case 2:
+        whole_speed=1;
+        break;
+    case 3:
+        whole_speed=0.5;
+        break;
+    default:
+        break;
+    }
+    float speed_x = whole_speed*cos(angle_rad);
+    float speed_y = whole_speed*sin(angle_rad);
+    wheel_pub.linear.x = speed_x;
+    wheel_pub.linear.y = speed_y;
+    wheel_pub.angular.z = 0;
+    wheel_publisher.publish(wheel_pub);
+
 }
 void WHEEL::stop()
 {
+    
     // set the velocity and angular velocity to 0.
+    pub_x = 0;
+    pub_y = 0;
+    pub_z = 0;
+    wheel_pub.linear.x = pub_x;
+    wheel_pub.linear.y = pub_y;
+    wheel_pub.angular.z = pub_z;
+    wheel_publisher.publish(wheel_pub);
 }
 void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
 {
@@ -154,9 +195,9 @@ void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
                 pub_z = -max_z;
         }
 
-        wheel_pub.x = pub_x;
-        wheel_pub.y = pub_y;
-        wheel_pub.z = pub_z;
+        wheel_pub.linear.x = pub_x;
+        wheel_pub.linear.y = pub_y;
+        wheel_pub.angular.z = pub_z;
         wheel_publisher.publish(wheel_pub);
 
         /* velocity profile */
@@ -169,25 +210,25 @@ void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
 
         if (flag)
         {
-            x_now += (time_now - time_before) * (wheel_sub.x + x_vel_before) / 2;
-            y_now += (time_now - time_before) * (wheel_sub.y + y_vel_before) / 2;
-            z_now += (time_now - time_before) * (wheel_sub.z + z_vel_before) / 2;
+            x_now += (time_now - time_before) * (wheel_sub.linear.x + x_vel_before) / 2;
+            y_now += (time_now - time_before) * (wheel_sub.linear.y + y_vel_before) / 2;
+            z_now += (time_now - time_before) * (wheel_sub.angular.z + z_vel_before) / 2;
         }
         flag = true;
 
-        x_vel_before = wheel_sub.x;
-        y_vel_before = wheel_sub.y;
-        z_vel_before = wheel_sub.z;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
         time_before = time_now;
         ros::Duration(0.005).sleep();
     }
 
     // reaching goal and pub speed 0
-    while ((wheel_sub.x != 0 || wheel_sub.y != 0 || wheel_sub.z != 0) && ros::ok())
+    while ((wheel_sub.linear.x != 0 || wheel_sub.linear.y != 0 || wheel_sub.angular.z != 0) && ros::ok())
     {
-        wheel_pub.x = 0;
-        wheel_pub.y = 0;
-        wheel_pub.z = 0;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = 0;
         wheel_publisher.publish(wheel_pub);
 
         data_check = false;
@@ -296,9 +337,9 @@ void WHEEL::moveUP(double x_cor, double y_cor, double z_cor)
                 pub_z = -max_z;
         }
 
-        wheel_pub.x = pub_x;
-        wheel_pub.y = pub_y;
-        wheel_pub.z = pub_z;
+        wheel_pub.linear.x = pub_x;
+        wheel_pub.linear.y = pub_y;
+        wheel_pub.angular.z = pub_z;
         wheel_publisher.publish(wheel_pub);
 
         /* velocity profile */
@@ -311,25 +352,25 @@ void WHEEL::moveUP(double x_cor, double y_cor, double z_cor)
 
         if (flag)
         {
-            x_now += (time_now - time_before) * (wheel_sub.x + x_vel_before) / 2;
-            y_now += (time_now - time_before) * (wheel_sub.y + y_vel_before) / 2;
-            z_now += (time_now - time_before) * (wheel_sub.z + z_vel_before) / 2;
+            x_now += (time_now - time_before) * (wheel_sub.linear.x + x_vel_before) / 2;
+            y_now += (time_now - time_before) * (wheel_sub.linear.y + y_vel_before) / 2;
+            z_now += (time_now - time_before) * (wheel_sub.angular.z + z_vel_before) / 2;
         }
         flag = true;
 
-        x_vel_before = wheel_sub.x;
-        y_vel_before = wheel_sub.y;
-        z_vel_before = wheel_sub.z;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
         time_before = time_now;
         ros::Duration(0.005).sleep();
     }
 
     // reaching goal and pub speed 0
-    while ((wheel_sub.x != 0 || wheel_sub.y != 0 || wheel_sub.z != 0) && ros::ok())
+    while ((wheel_sub.linear.x != 0 || wheel_sub.linear.y != 0 || wheel_sub.angular.z != 0) && ros::ok())
     {
-        wheel_pub.x = 0;
-        wheel_pub.y = 0;
-        wheel_pub.z = 0;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = 0;
         wheel_publisher.publish(wheel_pub);
 
         data_check = false;
