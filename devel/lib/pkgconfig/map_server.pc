@@ -1,8 +1,8 @@
-prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
+prefix=/home/twang/Turtlebot3_AutoRace/devel
 
 Name: map_server
 Description: Description of map_server
 Version: 1.17.3
-Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/navigation/map_server/include
+Cflags: -I/home/twang/Turtlebot3_AutoRace/src/navigation/map_server/include
 Libs: -L${prefix}/lib -lmap_server_image_loader
 Requires: roscpp nav_msgs tf2

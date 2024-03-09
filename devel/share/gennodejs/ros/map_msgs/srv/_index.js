@@ -1,18 +1,18 @@
 
 "use strict";
 
-let SaveMap = require('./SaveMap.js')
+let GetPointMapROI = require('./GetPointMapROI.js')
+let SetMapProjections = require('./SetMapProjections.js')
+let GetMapROI = require('./GetMapROI.js')
 let GetPointMap = require('./GetPointMap.js')
 let ProjectedMapsInfo = require('./ProjectedMapsInfo.js')
-let GetPointMapROI = require('./GetPointMapROI.js')
-let GetMapROI = require('./GetMapROI.js')
-let SetMapProjections = require('./SetMapProjections.js')
+let SaveMap = require('./SaveMap.js')
 
 module.exports = {
-  SaveMap: SaveMap,
+  GetPointMapROI: GetPointMapROI,
+  SetMapProjections: SetMapProjections,
+  GetMapROI: GetMapROI,
   GetPointMap: GetPointMap,
   ProjectedMapsInfo: ProjectedMapsInfo,
-  GetPointMapROI: GetPointMapROI,
-  GetMapROI: GetMapROI,
-  SetMapProjections: SetMapProjections,
+  SaveMap: SaveMap,
 };

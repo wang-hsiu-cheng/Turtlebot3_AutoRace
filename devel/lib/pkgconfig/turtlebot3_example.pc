@@ -1,8 +1,8 @@
-prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
+prefix=/home/twang/Turtlebot3_AutoRace/devel
 
 Name: turtlebot3_example
 Description: Description of turtlebot3_example
 Version: 1.2.6
-Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel/include
+Cflags: -I/home/twang/Turtlebot3_AutoRace/devel/include
 Libs: -L${prefix}/lib 
 Requires: rospy actionlib interactive_markers std_msgs sensor_msgs geometry_msgs nav_msgs visualization_msgs actionlib_msgs turtlebot3_msgs message_runtime

@@ -1,8 +1,8 @@
-prefix=/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/devel
+prefix=/home/twang/Turtlebot3_AutoRace/devel
 
 Name: turtlebot3_slam
 Description: Description of turtlebot3_slam
 Version: 1.2.6
-Cflags: -I/home/miffy1233/rrrrrr/Turtlebot3_AutoRace/src/turtlebot3/turtlebot3_slam/include
+Cflags: -I/home/twang/Turtlebot3_AutoRace/src/turtlebot3/turtlebot3_slam/include
 Libs: -L${prefix}/lib 
 Requires: roscpp sensor_msgs
