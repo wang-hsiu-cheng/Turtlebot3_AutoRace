@@ -13,7 +13,7 @@ void race_levels(const int, const int, ros::NodeHandle nh);
 int navigationSystem(ros::NodeHandle nh);
 
 bool data_check = false;
-bool goalReached = false;
+// bool goalReached = false;
 int reset_state;
 int begin_state;
 int level = 0;

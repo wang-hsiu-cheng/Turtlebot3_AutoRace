@@ -1,0 +1,11 @@
+<launch>
+    <param name="/goal_x" type="double" value="0.7" />
+    <param name="/goal_y" type="double" value="0.4" />
+    <param name="/goal_theta" type="double" value="1.0" />
+    
+    <node name="navigation_send_goal" pkg="tb3_navigation" type="navigation_send_goal" output="screen" respawn="true" respawn_delay="1" >
+        <!-- <param name="/goal_x" type="double" value="0.7" />
+        <param name="/goal_y" type="double" value="0.4" />
+        <param name="/goal_theta" type="double" value="1.0" /> -->
+    </node>
+</launch>
