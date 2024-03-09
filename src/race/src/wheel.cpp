@@ -6,7 +6,6 @@ void WHEEL::init(ros::NodeHandle nh)
 {
     // wheel_publisher = nh.advertise<geometry_msgs::Point>("wheel_toSTM", 1);
     wheel_subscriber = nh.subscribe("wheel_fromSTM", 1, WHEEL::callback);
-
     wheel_publisher = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1); //miffy use newtopic to the base controller.
     nh.getParam("calibration_x_intercept", calibration_x_intercept);
     nh.getParam("calibration_y_intercept", calibration_y_intercept);
@@ -44,23 +43,62 @@ void WHEEL::init(ros::NodeHandle nh)
 //     data_check = true;
 // }
 
-void callback(const geometry_msgs::Twist::ConstPtr& msg ) //miffy changed the message type to Twist
+void WHEEL::callback(const geometry_msgs::Twist::ConstPtr& msg ) //miffy changed the message type to Twist
 {
     //ROS_INFO("speed report: x= %f,y= %f,theta= %f",msg->linear.x,msg->linear.y,msg->angular.z);
-    wheel_sub.x=msg->linear.x;
-    wheel_sub.y=msg->linear.y;
-    wheel_sub.theta=msg->angular.z;
+    wheel_sub.linear.x=msg->linear.x;
+    wheel_sub.linear.y=msg->linear.y;
+    wheel_sub.linear.z=msg->angular.z;
+}
+
+float min(float a,float b)
+{
+    if (a<b) return a;
+    else return b;
+}
+float max(double a,double b)
+{
+        if (a>b) return a;
+        else return b;
 }
 // void WHEEL::move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right)
 // {
 //     // determine where should wheel move to.
 // }
-void WHEEL::move_front(int mode, float angle_rad)
+int WHEEL::move_front(int mode, float angle_rad)
 {
+    bool data_check, flag;
     // [Past reqirement] publish velocity and integrate the length that robot run.
     // if length is enough, then stop running and return.
     // [New Requriedment-20240226] receive the declination between robot & road edge
     float whole_speed; //set the max speed of forward dir.
+    float x_vel_now, y_vel_now, z_vel_now;
+    float x_vel_before = 0, y_vel_before = 0, z_vel_before = 0;
+    float acceleration = 0.01;
+    /* do the rotation*/
+    float angle_now = 0;
+    float angle_err = angle_rad - angle_now;
+    float angle_const;
+    
+    while(abs(angle_err)>0.001)
+    {
+        if(angle_err<=0.1745329252) angle_const = 0.087266462599716 ;//5degree per second
+        else if (angle_err<=0.5235988) angle_const = 0.174532925199433 ;//10degree per second
+        else if (angle_err<=1.0471976) angle_const = 0.349065850398866 ;//20degree per second
+        else if (angle_err<=1.57079632679) angle_const = 0.523598775598299; //30degree per second
+
+        if((abs(angle_err)/angle_err)<0) angle_const = -angle_const;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = angle_const;
+        wheel_publisher.publish(wheel_pub);
+        angle_now+=angle_const;
+        ros::Duration(1).sleep();
+    }
+    wheel_pub.angular.z=0;
+    wheel_publisher.publish(wheel_pub);
+    ros::Duration(1).sleep();
+    /* go foward after the rotation*/
     switch (mode)//mode stands for the speed: the larger the number, the faster the cat will run.
     {
     case 1:
@@ -74,26 +112,70 @@ void WHEEL::move_front(int mode, float angle_rad)
         break;
     default:
         break;
-    }
-    float speed_x = whole_speed*cos(angle_rad);
-    float speed_y = whole_speed*sin(angle_rad);
-    wheel_pub.linear.x = speed_x;
-    wheel_pub.linear.y = speed_y;
-    wheel_pub.angular.z = 0;
-    wheel_publisher.publish(wheel_pub);
-
+    }    
+   /* velocity profile */
+    data_check = false;
+    flag = true;
+ 
+    while (!data_check && ros::ok() && flag)
+        {
+            ros::spinOnce();
+            x_vel_before = wheel_sub.linear.x;
+            y_vel_before = wheel_sub.linear.y;
+            z_vel_before = wheel_sub.angular.z;
+        
+           
+            if (flag)
+                {
+                    x_vel_now = min((whole_speed*cos(angle_rad)),(x_vel_before+acceleration));
+                    y_vel_now = min((whole_speed*sin(angle_rad)),(y_vel_before+acceleration));
+                    z_vel_now =0;
+                }
+            flag = true;
+            if (x_vel_now>=whole_speed*cos(angle_rad)&&y_vel_now>=whole_speed*sin(angle_rad)) flag = false;
+            wheel_pub.linear.x = x_vel_now;
+            wheel_pub.linear.y = y_vel_now;
+            wheel_pub.angular.z = z_vel_now;
+            wheel_publisher.publish(wheel_pub);
+            ros::Duration(0.005).sleep();
+     }
+    if(!flag) return 1; //when reach the goal velo will return 1
 }
-void WHEEL::stop()
+int WHEEL::stop()
 {
+
+    double accerlearation = 0.01;
+    bool data_check, flag;
+    float x_vel_now, y_vel_now, z_vel_now;
+    float x_vel_before = 0, y_vel_before = 0, z_vel_before = 0;
+    data_check = false;
+    int whole_speed = 0;
+
     
-    // set the velocity and angular velocity to 0.
-    pub_x = 0;
-    pub_y = 0;
-    pub_z = 0;
-    wheel_pub.linear.x = pub_x;
-    wheel_pub.linear.y = pub_y;
-    wheel_pub.angular.z = pub_z;
-    wheel_publisher.publish(wheel_pub);
+    while (!data_check && ros::ok())
+    {
+    
+        ros::spinOnce();
+        float acceleration = -0.01;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
+    
+        if (flag)
+            {
+                x_vel_now = max(whole_speed,(x_vel_before+acceleration));
+                y_vel_now = max(whole_speed,(y_vel_before+acceleration));
+                z_vel_now =0;
+            }
+        flag = true;
+        wheel_pub.linear.x = x_vel_now;
+        wheel_pub.linear.y = y_vel_now;
+        wheel_pub.angular.z = z_vel_now;
+        wheel_publisher.publish(wheel_pub);
+        if (x_vel_now<=whole_speed&&y_vel_now<=whole_speed) flag = false;
+        ros::Duration(0.005).sleep();
+    }
+    if (!flag) return 1;
 }
 void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
 {
@@ -195,9 +277,9 @@ void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
                 pub_z = -max_z;
         }
 
-        wheel_pub.x = pub_x;
-        wheel_pub.y = pub_y;
-        wheel_pub.z = pub_z;
+        wheel_pub.linear.x = pub_x;
+        wheel_pub.linear.y = pub_y;
+        wheel_pub.angular.z = pub_z;
         wheel_publisher.publish(wheel_pub);
 
         /* velocity profile */
@@ -210,25 +292,25 @@ void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
 
         if (flag)
         {
-            x_now += (time_now - time_before) * (wheel_sub.x + x_vel_before) / 2;
-            y_now += (time_now - time_before) * (wheel_sub.y + y_vel_before) / 2;
-            z_now += (time_now - time_before) * (wheel_sub.z + z_vel_before) / 2;
+            x_now += (time_now - time_before) * (wheel_sub.linear.x + x_vel_before) / 2;
+            y_now += (time_now - time_before) * (wheel_sub.linear.y + y_vel_before) / 2;
+            z_now += (time_now - time_before) * (wheel_sub.angular.z + z_vel_before) / 2;
         }
         flag = true;
 
-        x_vel_before = wheel_sub.x;
-        y_vel_before = wheel_sub.y;
-        z_vel_before = wheel_sub.z;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
         time_before = time_now;
         ros::Duration(0.005).sleep();
     }
 
     // reaching goal and pub speed 0
-    while ((wheel_sub.x != 0 || wheel_sub.y != 0 || wheel_sub.z != 0) && ros::ok())
+    while ((wheel_sub.linear.x != 0 || wheel_sub.linear.y != 0 || wheel_sub.angular.z != 0) && ros::ok())
     {
-        wheel_pub.x = 0;
-        wheel_pub.y = 0;
-        wheel_pub.z = 0;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.linear.z = 0;
         wheel_publisher.publish(wheel_pub);
 
         data_check = false;
@@ -337,9 +419,9 @@ void WHEEL::moveUP(double x_cor, double y_cor, double z_cor)
                 pub_z = -max_z;
         }
 
-        wheel_pub.x = pub_x;
-        wheel_pub.y = pub_y;
-        wheel_pub.z = pub_z;
+        wheel_pub.linear.x = pub_x;
+        wheel_pub.linear.y = pub_y;
+        wheel_pub.angular.z = pub_z;
         wheel_publisher.publish(wheel_pub);
 
         /* velocity profile */
@@ -352,25 +434,25 @@ void WHEEL::moveUP(double x_cor, double y_cor, double z_cor)
 
         if (flag)
         {
-            x_now += (time_now - time_before) * (wheel_sub.x + x_vel_before) / 2;
-            y_now += (time_now - time_before) * (wheel_sub.y + y_vel_before) / 2;
-            z_now += (time_now - time_before) * (wheel_sub.z + z_vel_before) / 2;
+            x_now += (time_now - time_before) * (wheel_sub.linear.x + x_vel_before) / 2;
+            y_now += (time_now - time_before) * (wheel_sub.linear.y + y_vel_before) / 2;
+            z_now += (time_now - time_before) * (wheel_sub.angular.z + z_vel_before) / 2;
         }
         flag = true;
 
-        x_vel_before = wheel_sub.x;
-        y_vel_before = wheel_sub.y;
-        z_vel_before = wheel_sub.z;
+        x_vel_before = wheel_sub.linear.x;
+        y_vel_before = wheel_sub.linear.y;
+        z_vel_before = wheel_sub.angular.z;
         time_before = time_now;
         ros::Duration(0.005).sleep();
     }
 
     // reaching goal and pub speed 0
-    while ((wheel_sub.x != 0 || wheel_sub.y != 0 || wheel_sub.z != 0) && ros::ok())
+    while ((wheel_sub.linear.x != 0 || wheel_sub.linear.y != 0 || wheel_sub.angular.z != 0) && ros::ok())
     {
-        wheel_pub.x = 0;
-        wheel_pub.y = 0;
-        wheel_pub.z = 0;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = 0;
         wheel_publisher.publish(wheel_pub);
 
         data_check = false;
