@@ -1,6 +1,9 @@
 #include "race/vision.h"
 #include "math.h"
+#include <time.h>
 #include "ros/ros.h"
+
+#define SOURCE_TURN_LEFT "/home/twang/pictureSource/turntest.jpg"
 
 void VISION::init(ros::NodeHandle nh)
 {
@@ -17,28 +20,37 @@ void VISION::init(ros::NodeHandle nh)
 
 void VISION::takingPhoto(int imageName)
 {
-    VideoCapture cap(0); // 鏡頭編號依序從 012...
+    // VideoCapture cap(0); // 鏡頭編號依序從 012...
     Mat img;
     bool isPrinted = false;
 
-    if (!cap.isOpened())
-    { // 確認有連線到該編號的鏡頭
-        cout << "Cannot open capture\n";
-        return;
+    printf("[INFO] start takingPhoto\n");
+    img = imread(SOURCE_TURN_LEFT);
+    if (img.empty()) {
+        printf("Error: Unable to load image %s\n", SOURCE_TURN_LEFT);
     }
-    bool ret = cap.read(img);
-    while (!ret)
-    {
-        cout << "Cant receive frame\n";
-        ret = cap.read(img);
-    }
+    // imshow("origin source", img);
+
+    // TESTING ON PC! Close VideoCapture Temporarily!
+    // if (!cap.isOpened())
+    // { // 確認有連線到該編號的鏡頭
+    //     cout << "Cannot open capture\n";
+    //     return;
+    // }
+    // bool ret = cap.read(img);
+    // while (!ret)
+    // {
+    //     cout << "Cant receive frame\n";
+    //     ret = cap.read(img);
+    // }
 
     Mat original_image = img.clone();
     switch (imageName)
     {
     case 0:
-        VISION::clock++;
-        if (clock == 100)
+        counter++;
+        VISION::isDetected = false;
+        if (counter == 100)
             VISION::isDetected = true;
         break;
     case 1:
@@ -76,6 +88,14 @@ void VISION::green_light_image()
 }
 void VISION::warning_sign_image()
 {
+    double start, end = 20 * CLOCKS_PER_SEC;
+    // 紀錄開始計時的時間
+    start = clock();
+    while (clock() - start >= end)
+    {
+        ROS_INFO("detect warning sign");
+        VISION::isDetected = true;
+    }
     return;
     // continue detecting if sign exist.
     // if exist but not large enough, continue moving and detecting.
@@ -96,6 +116,10 @@ void VISION::tunnel_sign_image()
 Mat VISION::filtGraph(Mat img, char colorCode)
 {
     Mat img_hsv, mask, result;
+    img_hsv = Mat::zeros(img.size(), CV_8UC3);
+    mask = Mat::zeros(img.size(), CV_8UC3);
+    result = Mat::zeros(img.size(), CV_8UC3);
+
     cvtColor(img, img_hsv, COLOR_BGR2HSV);
 
     switch (colorCode)
@@ -159,7 +183,6 @@ Mat VISION::filtGraph(Mat img, char colorCode)
     Scalar upper(hue_M, sat_M, val_M);
     inRange(img_hsv, lower, upper, mask);
 
-    result = Mat::zeros(img.size(), CV_8UC3);
     bitwise_and(img, img, result, mask);
     // imshow("Letter Filted", result);
     return result;
@@ -274,18 +297,19 @@ void VISION::turnSignImage(Mat original_image, Mat image)
             {
                 left_pt_count++;
             }
-            else if (polyContours2[a][b].x > ((vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4).x)
+            else
             {
                 right_pt_count++;
             }
         }
-        string direction = (left_pt_count < right_pt_count) ? "turn left" : "turn right";
+        VISION::direction = (left_pt_count < right_pt_count) ? "turn_left" : "turn_right";
         putText(original_image, direction, Point(10, 25), 0, 0.8, Scalar(0, 255, 0), 1, 1, false);
     }
     if (left_pt_count < 5)
         VISION::isDetected = false;
     else
         VISION::isDetected = true;
+    cout << left_pt_count << right_pt_count << endl;
     // imshow("D", dp_image_2);
     // imshow("camera", original_image);
 }

@@ -11,11 +11,11 @@ using namespace cv;
 namespace VISION
 {
 
-    int lastImageName = 100;
+    // int lastImageName = 100;
     int imageName = 100;
-    int clock = 0;
-    bool is_sign_exist = false;
+    int counter = 0;
     bool isDetected = false;
+    string direction;
 
     void road_line_image(Mat src, Mat &ROI, bool isPrinted);
     void green_light_image();

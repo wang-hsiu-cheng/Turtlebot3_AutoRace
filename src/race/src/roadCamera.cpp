@@ -2,22 +2,32 @@
 #include "math.h"
 #include "ros/ros.h"
 
+#define SOURCE_STRAIGHT "/home/twang/pictureSource/roadline_test2.jpg"
+#define SOURCE_CURVE "/home/twang/pictureSource/roadline_test4.jpg"
+
 void CAMERA1::detectRoad()
 {
-    VideoCapture cap(0); // 鏡頭編號依序從 012...
+    // VideoCapture cap(1); // 鏡頭編號依序從 012...
     Mat img;
 
-    if (!cap.isOpened())
-    { // 確認有連線到該編號的鏡頭
-        cout << "Cannot open capture\n";
+    img = imread(SOURCE_STRAIGHT);
+    if (img.empty()) {
+        printf("Error: Unable to load image %s\n", SOURCE_STRAIGHT);
+        CAMERA1::isDetected = false;
         return;
     }
-    bool ret = cap.read(img);
-    while (!ret)
-    {
-        cout << "Cant receive frame\n";
-        ret = cap.read(img);
-    }
+    // TESTING ON PC! Close VideoCapture Temporarily!
+    // if (!cap.isOpened())
+    // { // 確認有連線到該編號的鏡頭
+    //     cout << "Cannot open capture\n";
+    //     return;
+    // }
+    // bool ret = cap.read(img);
+    // while (!ret)
+    // {
+    //     cout << "Cant receive frame\n";
+    //     ret = cap.read(img);
+    // }
 
     Mat originalImage = img.clone();
     Mat filtYellowImage = img.clone();
@@ -32,7 +42,11 @@ void CAMERA1::detectRoad()
 void CAMERA1::filtGraph(Mat src, Mat &filteredImg, char color)
 {
     Mat img_hsv, mask;
-    cvtColor(img, img_hsv, COLOR_BGR2HSV);
+    img_hsv = Mat::zeros(src.size(), CV_8UC3);
+    mask = Mat::zeros(src.size(), CV_8UC3);
+    filteredImg = Mat::zeros(src.size(), CV_8UC3);
+
+    cvtColor(src, img_hsv, COLOR_BGR2HSV);
 
     // CAMERA1::hue_m = 0;
     // CAMERA1::hue_M = 173;
@@ -66,7 +80,6 @@ void CAMERA1::filtGraph(Mat src, Mat &filteredImg, char color)
     Scalar upper(hue_M, sat_M, val_M);
     inRange(img_hsv, lower, upper, mask);
 
-    filteredImg = Mat::zeros(src.size(), CV_8UC3);
     bitwise_and(src, src, filteredImg, mask);
 
     return;
@@ -75,6 +88,7 @@ void CAMERA1::filtGraph(Mat src, Mat &filteredImg, char color)
 void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
 {
     Mat thresh_yellow, thresh_white;
+    cout << "start roadLineImage func\n";
 
     cvtColor(yellowImg, yellowImg, COLOR_BGR2GRAY);
     cvtColor(whiteImg, whiteImg, COLOR_BGR2GRAY);
