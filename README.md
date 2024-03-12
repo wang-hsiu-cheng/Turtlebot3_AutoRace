@@ -13,15 +13,44 @@ And Rasbpi 4B pulls this repo.
 
 ## About Testing
 
-### nevigation stack testing
-- `export TURTLEBOT3_MODEL=burger`
-- `roslaunch turtlebot3_gazebo turtlebot3_world.launch`
-- open new terminal
-- `source devel/setup.bash`
-- `roslaunch tb3_navigation move_base.launch`
+### main program test
+- if want test level 1 ~ level 5: `git chechout feature/wheel-and-camera-integrate`
+- if only want test level 6(tunnel navigation), `git chechout Fix/navigation-and-main-program-connection`
+1. use terminal to open gazebo simulation environment
+   1. `export TURTLEBOT3_MODEL=burger`
+   2. `roslaunch turtlebot3_gazebo turtlebot3_world.launch`
+2. modify begin_state & reset_state in `auto.launch`
+   - if you want to test level 2(turn sign), set `begin_state = 2` & `reset_state = 2`
+   - if you want to test level 2 to level 4, set `begin_state = 2` & `reset_state = 4`
+   - etc.
+3. open new terminal and launch navigation programs
+   1. `source devel/setup.bash`
+   2. `roslaunch race auto.launch`
+- NOTE:
+because I'm testing in virtual machine that can't open camera in computer
+So, all program about openCV are changed to photo reading mode
+If you don't set the source photo path correct. openCV won't process any photo, and the program won't stop!!!
+you can add an integer variable to limit the running times of while loops to prevent infinite loop like the following code
+```cpp
+int testCounter = 0;
+do {
+   testCounter ++;
+   WHEEL::move_front(3, 0);
+   VISION::takingPhoto(3);
+} while (!VISION::isDetected && testCounter < 20);
+```
 
-### main program missions flow testing
-- run testing node(not ready yet)
+### nevigation stack testing
+1. use terminal to open gazebo simulation environment
+   1. `export TURTLEBOT3_MODEL=burger`
+   2. `roslaunch turtlebot3_gazebo turtlebot3_world.launch`
+2. set the navigation goal in `move_base.launch`
+   1. `<param name="/goal_x" type="double" value="0.0" />`
+   2. `<param name="/goal_y" type="double" value="0.5" />`
+   - note that thay're global position in gazebo world, not local position!!!
+3. open new terminal and launch navigation programs
+   1. `source devel/setup.bash`
+   2. `roslaunch tb3_navigation move_base.launch`
 
 ### camera testing
 - [check out this repo.](https://github.com/wang-hsiu-cheng/openCV)
