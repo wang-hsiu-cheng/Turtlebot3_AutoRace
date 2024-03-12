@@ -9,7 +9,7 @@
 #include <geometry_msgs/Twist.h> //miffy changed from Point to Twist.
 #include "yaml-cpp/yaml.h"
 
-ros::Publisher wheel_publisher; // Topic: mecanum_toSTM
+ros::Publisher wheel_publisher; // Topic: /cmd_vel
 geometry_msgs::Twist wheel_pub;
 
 ros::Subscriber wheel_subscriber; // Topic: mecanum_fromSTM

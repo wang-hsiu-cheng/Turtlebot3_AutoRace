@@ -7,7 +7,7 @@ void WHEEL::init(ros::NodeHandle nh)
     // wheel_publisher = nh.advertise<geometry_msgs::Point>("wheel_toSTM", 1);
     wheel_subscriber = nh.subscribe("wheel_fromSTM", 1, WHEEL::callback);
 
-    wheel_publisher = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1); //miffy use newtopic to the base controller.
+    wheel_publisher = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10); //miffy use newtopic to the base controller.
     nh.getParam("calibration_x_intercept", calibration_x_intercept);
     nh.getParam("calibration_y_intercept", calibration_y_intercept);
     nh.getParam("calibration_z_intercept", calibration_z_intercept);
@@ -77,10 +77,20 @@ void WHEEL::move_front(int mode, float angle_rad)
     }
     float speed_x = whole_speed*cos(angle_rad);
     float speed_y = whole_speed*sin(angle_rad);
-    wheel_pub.linear.x = speed_x;
-    wheel_pub.linear.y = speed_y;
-    wheel_pub.angular.z = 0;
-    wheel_publisher.publish(wheel_pub);
+    wheel_pub.linear.x = whole_speed;
+    // wheel_pub.linear.y = speed_y;
+    wheel_pub.angular.z = angle_rad;
+    // wheel_publisher.publish(wheel_pub);
+    ros::Rate loop_rate(10); // 设置发布频率为10Hz
+    int testCounter = 0;
+    if (ros::ok() )
+    {
+        testCounter ++;
+        std::cout << testCounter << std::endl;
+        wheel_publisher.publish(wheel_pub);
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
 
 }
 void WHEEL::stop()
