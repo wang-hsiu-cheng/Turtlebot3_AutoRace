@@ -64,6 +64,7 @@ int main(int argc, char **argv)
 void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
 {
     level = begin_state;
+    printf("[ROS_INFO] level = %d\n", level);
     if (level == 1)
     {
         // while (ros::ok() && !data_check)
@@ -83,15 +84,18 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
             return;
         level++;
     }
+    printf("[ROS_INFO] level = %d\n", level);
     if (level == 2)
     {
         turnScript();
+        cout << "finish turn script\n";
         runAndDetectImage((int)warningSign);
 
         if (level >= end_state)
             return;
         level++;
     }
+    printf("[ROS_INFO] level = %d\n", level);
     if (level == 3)
     {
         // avoid_wall_script();
@@ -101,6 +105,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
             return;
         level++;
     }
+    printf("[ROS_INFO] level = %d\n", level);
     if (level == 4)
     {
         // parking_script();
@@ -109,6 +114,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
             return;
         level++;
     }
+    printf("[ROS_INFO] level = %d\n", level);
     if (level == 5)
     {
         runAndDetectImage((int)fance);
@@ -129,6 +135,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
             return;
         level++;
     }
+    printf("[ROS_INFO] level = %d\n", level);
     if (level == 6)
     {   
         ROS_INFO("Start Nav\n");
@@ -142,7 +149,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
 
 int init_all_sensors(ros::NodeHandle nh)
 {
-    // WHEEL::init(nh);
+    WHEEL::init(nh);
     // IMU::init();
     return 1;
 }
