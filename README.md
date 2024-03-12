@@ -27,10 +27,16 @@ And Rasbpi 4B pulls this repo.
    1. `source devel/setup.bash`
    2. `roslaunch race auto.launch`
 - NOTE:
-because I'm testing in virtual machine that can't open camera in computer
+because I'm testing in virtual machine that can't open camera of computer
 So, all program about openCV are changed to photo reading mode
 If you don't set the source photo path correct. openCV won't process any photo, and the program won't stop!!!
-you can add an integer variable to limit the running times of while loops to prevent infinite loop like the following code
+```cpp
+// can only set direct path like below, relative path is NOT allowed! (IDK why, maybe a bug)
+#define SOURCE_TURN_LEFT "/home/twang/pictureSource/turntest.jpg"
+// and function will read the photo directly
+img = imread(SOURCE_TURN_LEFT);
+```
+you can add an integer variable to limit the running times of while loops to prevent infinite loop like below
 ```cpp
 int testCounter = 0;
 do {
