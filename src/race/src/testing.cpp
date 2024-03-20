@@ -20,11 +20,13 @@ int main(int argc, char **argv)
     init_all_sensors(nh);
 
     int test_phase = -1;
+    int sign_number;
+    double speed, angle;
     // nh.getParam("test_phase", test_phase);
     while (test_phase != 0)
     {
         cout << "input test number: \n";
-        cin << test_phase;
+        cin >> test_phase;
         switch (test_phase)
         {
         case 1:
@@ -32,7 +34,6 @@ int main(int argc, char **argv)
             break;
 
         case 2:
-            double speed, angle;
             printf("enter speed and angle: ");
             cin >> speed >> angle;
             WHEEL::move_front(speed, angle);
@@ -40,17 +41,15 @@ int main(int argc, char **argv)
 
         case 3:
             printf("enter picture code: ");
-            int sign_number;
             cin >> sign_number;
-            VISION::taking_photo(sign_number);
+            VISION::takingPhoto(sign_number);
             cout << VISION::isDetected << endl;
             break;
 
         case 4:
             printf("enter picture code: ");
-            int sign_number;
             cin >> sign_number;
-            VISION::detect(sign_number);
+            runAndDetectImage(sign_number);
             break;
 
         default:

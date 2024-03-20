@@ -77,10 +77,14 @@ int WHEEL::move_front(int mode, float angle_rad)
     float acceleration = 0.01;
     /* do the rotation*/
     float angle_now = 0;
-    float angle_err = angle_rad - angle_now;
+    float angle_err = 1;
     float angle_const;
+    ros::Rate loop_rate(10); // 设置发布频率为10Hz
+    ros::Time last_time = ros::Time::now();
+    ros::Time current_time;
+    double dt;
 
-    while(abs(angle_err)>0.001)
+    while(abs(angle_err)>0.01 && ros::ok())
     {
         if(angle_err<=0.1745329252) angle_const = 0.087266462599716 ;//5degree per second
         else if (angle_err<=0.5235988) angle_const = 0.174532925199433 ;//10degree per second
@@ -91,24 +95,32 @@ int WHEEL::move_front(int mode, float angle_rad)
         wheel_pub.linear.x = 0;
         wheel_pub.linear.y = 0;
         wheel_pub.angular.z = angle_const;
+        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angle_rad, angle_err, angle_const, angle_now);
         wheel_publisher.publish(wheel_pub);
-        angle_now+=angle_const;
-        ros::Duration(1).sleep();
+        current_time = ros::Time::now();
+        dt = (current_time - last_time).toSec();
+        last_time = current_time;
+        angle_now += angle_const * dt;
+        angle_err = angle_rad - angle_now;
+        loop_rate.sleep();
     }
     wheel_pub.angular.z=0;
     wheel_publisher.publish(wheel_pub);
-    ros::Duration(1).sleep();
+    loop_rate.sleep();
     /* go foward after the rotation*/
     switch (mode)//mode stands for the speed: the larger the number, the faster the cat will run.
     {
     case 1:
-        whole_speed=1.5;
+        whole_speed = 1.5;
         break;
     case 2:
-        whole_speed=1;
+        whole_speed = 1;
         break;
     case 3:
-        whole_speed=0.5;
+        whole_speed = 0.5;
+        break;
+    case 4:
+        whole_speed = 0;
         break;
     default:
         break;
@@ -117,7 +129,7 @@ int WHEEL::move_front(int mode, float angle_rad)
     data_check = false;
     flag = true;
 
-    while (!data_check && ros::ok() && flag)
+    if (!data_check && ros::ok() && flag)
     {
         ros::spinOnce();
         x_vel_before = wheel_sub.linear.x;
@@ -127,17 +139,17 @@ int WHEEL::move_front(int mode, float angle_rad)
 
         if (flag)
         {
-            x_vel_now = min((whole_speed*cos(angle_rad)),(x_vel_before+acceleration));
-            y_vel_now = min((whole_speed*sin(angle_rad)),(y_vel_before+acceleration));
-            z_vel_now =0;
+            x_vel_now = min((whole_speed),(x_vel_before+acceleration));
+            // y_vel_now = min((whole_speed*sin(angle_rad)),(y_vel_before+acceleration));
+            z_vel_now = 0;
         }
         flag = true;
-        if (x_vel_now>=whole_speed*cos(angle_rad)&&y_vel_now>=whole_speed*sin(angle_rad)) flag = false;
+        if (x_vel_now>=whole_speed) flag = false;
         wheel_pub.linear.x = x_vel_now;
         wheel_pub.linear.y = y_vel_now;
         wheel_pub.angular.z = z_vel_now;
         wheel_publisher.publish(wheel_pub);
-        ros::Duration(0.005).sleep();
+        loop_rate.sleep();
     }
     if(!flag) return 1; //when reach the goal velo will return 1
     // float speed_x = whole_speed*cos(angle_rad);

@@ -41,7 +41,7 @@
 
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 
-    <node name="serial_server" pkg="rosserial_server" type="serial_node" output="screen" respawn="true" respawn_delay="3">
+    <!-- <node name="serial_server" pkg="rosserial_server" type="serial_node" output="screen" respawn="true" respawn_delay="3">
         <param name="port" value="/dev/ttyUSB0" />
         <param name="baud" value="115200" />
         
@@ -50,6 +50,6 @@
                 publishers: [ mecanum_fromSTM, reset_fromSTM, scaraflag_fromSTM ]
                 subscribers: [ mecanum_toSTM, intake_toSTM, scara_toSTM ]
         </rosparam> 
-    </node>
+    </node> -->
 
 </launch>
