@@ -1,5 +1,5 @@
-#ifndef _STAEG1_H_
-#define _STAGE1_H_
+#ifndef _DETECT_H_
+#define _DETECT_H_
 
 #include "race/vision.h"
 #include "race/roadCamera.h"

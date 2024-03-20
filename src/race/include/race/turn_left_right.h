@@ -1,5 +1,5 @@
-#ifndef _STAEG1_H_
-#define _STAGE1_H_
+#ifndef _TURN_LEFT_RIGHT_H_
+#define _TURN_LEFT_RIGHT_H_
 
 #include "race/wheel.h"
 #include "race/vision.h"

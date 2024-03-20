@@ -1,5 +1,5 @@
-#ifndef _ROAD_H_
-#define _ROAD_H_
+#ifndef _CAMERA1_H_
+#define _CAMERA1_H_
 
 #define PI 3.1415926536
 
