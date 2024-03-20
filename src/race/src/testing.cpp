@@ -4,6 +4,7 @@
 #include "race/wheel.h"
 #include "race/vision.h"
 #include "race/roadCamera.h"
+#define PI 3.141592653589793238462643383279502884
 
 using namespace std;
 
@@ -36,6 +37,7 @@ int main(int argc, char **argv)
         case 2:
             printf("enter speed and angle: ");
             cin >> speed >> angle;
+            angle = angle / 180 * PI;
             WHEEL::move_front(speed, angle);
             break;
 
