@@ -205,7 +205,7 @@ target_link_libraries(run turn_left_right detect)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})
 
 add_executable(testing src/testing.cpp)
-target_link_libraries(testing mecanum vision ${catkin_LIBRARIES})
+target_link_libraries(testing wheel vision roadCamera detect ${catkin_LIBRARIES})
 add_dependencies(testing ${OpenCV_LIBS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(reset src/reset.cpp)
