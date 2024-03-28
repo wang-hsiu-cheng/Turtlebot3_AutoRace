@@ -11,10 +11,9 @@ enum ImageName
     trafficLight,
     warningSign,
     turnSign,
-    parkingSign,
-    stopSign,
     fance,
-    tunnelSign
+    stopSign,
+    parkingSign
 };
 
 // void navigationSystemCallback(const move_base_msgs::MoveBaseActionResult::ConstPtr &msg)
@@ -137,7 +136,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     }
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 6)
-    {   
+    {
         ROS_INFO("Start Nav\n");
         navigationSystem(nh);
         // ROS_INFO("Stop Nav\n");
