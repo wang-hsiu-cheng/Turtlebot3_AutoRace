@@ -9,9 +9,11 @@ void CAMERA1::detectRoad()
 {
     // VideoCapture cap(1); // 鏡頭編號依序從 012...
     Mat img;
+    CAMERA1::isDetected = false;
 
     img = imread(SOURCE_STRAIGHT);
-    if (img.empty()) {
+    if (img.empty())
+    {
         printf("Error: Unable to load image %s\n", SOURCE_STRAIGHT);
         CAMERA1::isDetected = false;
         return;
@@ -133,7 +135,7 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
         Point center_begin_point = Point((B_L.x + B_R.x) / 2, B_L.y);
         Point center_end_point = Point((T_L.x + T_R.x) / 2, T_L.y);
         slop = newSlop;
-        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x));
+        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
 
         // printf("b_l:%.2f,%.2f t_l:%.2f,%.2f\n", B_L.x, B_L.y, T_L.x, T_L.y);
         // printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x, center_begin_point.y, center_end_point.x, center_end_point.y);
@@ -149,7 +151,7 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
         Point center_begin_point = Point(B_L.x, B_L.y);
         Point center_end_point = Point(T_L.x, T_L.y);
         slop = newSlop;
-        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x));
+        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
 
         // printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x, center_begin_point.y, center_end_point.x, center_end_point.y);
         // printf("b_l : %.2f, %.2f t_l : %.2f, %.2f\n", B_L.x, B_L.y, T_L.x, T_L.y);
@@ -164,7 +166,7 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
         Point center_begin_point = Point(B_R.x, B_R.y);
         Point center_end_point = Point(T_R.x, T_R.y);
         slop = newSlop;
-        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x));
+        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
 
         // printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x, center_begin_point.y, center_end_point.x, center_end_point.y);
         // printf("b_r : %.2f, %.2f t_r : %.2f, %.2f\n", B_R.x, B_R.y, T_R.x, T_R.y);
@@ -174,7 +176,11 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
     }
     else
     {
-        slop = 3.141592653589793238462643383279502884 / 2;
+        slop = 0;
         CAMERA1::isDetected = false;
     }
+}
+double CAMERA1::getSlop()
+{
+    return slop;
 }

@@ -13,8 +13,8 @@ using namespace cv;
 namespace CAMERA1
 {
     bool isDetected = false;
-    double slop = PI / 2;
-    double newSlop = PI / 2;
+    double slop = 0;
+    double newSlop = 0;
     int hue_m = 0;
     int hue_M = 255;
     int sat_m = 0;
@@ -25,6 +25,7 @@ namespace CAMERA1
     void detectRoad();
     void filtGraph(Mat src, Mat &filteredImg, char color);
     void roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg);
+    double getSlop();
 }
 
 #endif
