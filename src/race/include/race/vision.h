@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#define PI 3.1415926536
 
 using namespace std;
 using namespace cv;
@@ -14,10 +15,14 @@ namespace VISION
     // int lastImageName = 100;
     int imageName = 100;
     int counter = 0;
+    int detectingLoop = 40;
+    int detectedCounter = 0;
     bool isDetected = false;
     string direction;
+    int downCount = 0;
+    int riseCount = 0;
+    bool isRise = true;
 
-    void road_line_image(Mat src, Mat &ROI, bool isPrinted);
     void green_light_image();
     void warning_sign_image();
     void turnSignImage(Mat original_image, Mat image);
@@ -27,7 +32,15 @@ namespace VISION
     void fance_image();
     void init(ros::NodeHandle nh);
     void takingPhoto(int imageName); // 自動拍攝
-    Mat filtGraph(Mat img, char color_code);
+    Mat filtGraph(Mat img, int color_code);
+    enum PhotoColor
+    {
+        RED1,
+        RED2,
+        BLUE,
+        GREEN,
+        YELLOW
+    };
     /* launch param*/
     int hue_m = 0;
     int hue_M = 255;
@@ -71,7 +84,6 @@ namespace VISION
     bool E_isDetected = false;
     bool T_isDetected = false;
     bool L_isDetected = false;
-
     bool E_isCatched = false;
     bool T_isCatched = false;
     bool L_isCatched = false;
