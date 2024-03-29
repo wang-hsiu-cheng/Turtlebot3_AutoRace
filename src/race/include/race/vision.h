@@ -15,23 +15,25 @@ namespace VISION
     // int lastImageName = 100;
     int imageName = 100;
     int counter = 0;
-    int detectingLoop = 40;
+    const int detectingLoop = 40;
     int detectedCounter = 0;
     bool isDetected = false;
-    string direction;
+    int rightCount = 0;
+    int leftCount = 0;
+    char direction = 'n';
     int downCount = 0;
     int riseCount = 0;
     bool isRise = true;
 
+    void init(ros::NodeHandle nh);
+    void takingPhoto(int imageName);
+    void DontDetectAnything();
     void green_light_image();
     void warning_sign_image();
     void turnSignImage(Mat original_image, Mat image);
     void stop_sign_image();
     void parking_sign_image();
-    void tunnel_sign_image();
     void fance_image();
-    void init(ros::NodeHandle nh);
-    void takingPhoto(int imageName); // 自動拍攝
     Mat filtGraph(Mat img, int color_code);
     enum PhotoColor
     {

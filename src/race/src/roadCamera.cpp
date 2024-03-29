@@ -135,7 +135,10 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
         Point center_begin_point = Point((B_L.x + B_R.x) / 2, B_L.y);
         Point center_end_point = Point((T_L.x + T_R.x) / 2, T_L.y);
         slop = newSlop;
-        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
+        if (center_end_point.x - center_begin_point.x == 0)
+            newSlop = 0;
+        else
+            newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
 
         // printf("b_l:%.2f,%.2f t_l:%.2f,%.2f\n", B_L.x, B_L.y, T_L.x, T_L.y);
         // printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x, center_begin_point.y, center_end_point.x, center_end_point.y);
@@ -151,7 +154,10 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
         Point center_begin_point = Point(B_L.x, B_L.y);
         Point center_end_point = Point(T_L.x, T_L.y);
         slop = newSlop;
-        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
+        if (center_end_point.x - center_begin_point.x == 0)
+            newSlop = 0;
+        else
+            newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
 
         // printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x, center_begin_point.y, center_end_point.x, center_end_point.y);
         // printf("b_l : %.2f, %.2f t_l : %.2f, %.2f\n", B_L.x, B_L.y, T_L.x, T_L.y);
@@ -166,7 +172,10 @@ void CAMERA1::roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg)
         Point center_begin_point = Point(B_R.x, B_R.y);
         Point center_end_point = Point(T_R.x, T_R.y);
         slop = newSlop;
-        newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
+        if (center_end_point.x - center_begin_point.x == 0)
+            newSlop = 0;
+        else
+            newSlop = atan((center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x)) - PI / 2;
 
         // printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x, center_begin_point.y, center_end_point.x, center_end_point.y);
         // printf("b_r : %.2f, %.2f t_r : %.2f, %.2f\n", B_R.x, B_R.y, T_R.x, T_R.y);

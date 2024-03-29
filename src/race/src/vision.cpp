@@ -22,7 +22,6 @@ void VISION::takingPhoto(int imageName)
 {
     // VideoCapture cap(0); // 鏡頭編號依序從 012...
     Mat img;
-    bool isPrinted = false;
     VISION::isDetected = false;
 
     printf("[INFO] start takingPhoto\n");
@@ -39,7 +38,7 @@ void VISION::takingPhoto(int imageName)
         cout << "Cannot open capture\n";
         return;
     }
-    for (int i = 0; i < detectTimes; i++)
+    for (int i = 0; i < detectingLoop; i++)
     {
         bool ret = cap.read(img);
         while (!ret)
@@ -87,6 +86,7 @@ void VISION::takingPhoto(int imageName)
         isDeceted = true;
         cout << "detected";
     }
+    detectedCounter = 0;
     return;
 }
 void VISION::DontDetectAnything()
@@ -187,8 +187,8 @@ void VISION::warning_sign_image()
     RotatedRect box;     // 旋轉矩形 class
     Point2f vertices[4]; // 旋轉矩形四頂點
     vector<Point> pt;    // 存一個contour中的點集合
-    int left_pt_count = 0;
-    int right_pt_count = 0;
+    int leftPoints = 0;
+    int rightPoints = 0;
     int contourNumbers = polyContours2.size();
     // contourNumbers = (contourNumbers > 0) ? 1 : 0;
 
@@ -218,7 +218,7 @@ void VISION::warning_sign_image()
     // imshow("contour info", contours_info(dp_image_text, polyContours2));
 
     // imshow("D", dp_image_2);
-    imshow("camera", original_image);
+    // imshow("camera", original_image);
     if (triangleCount < 3 && triangleCount > 0)
     {
         // cout << "Triangle Count: " << rectangleCount;
@@ -232,7 +232,7 @@ void VISION::warning_sign_image()
 }
 void VISION::fance_image()
 {
-    int rectangleCount = 0;
+    // int rectangleCount = 0;
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);
 
@@ -322,8 +322,7 @@ void VISION::fance_image()
         box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
         if (polyContours2[a].size() == 4)
         {
-            rectangleCount++;
-            detect += 1;
+            // rectangleCount++;
             // for (int i = 0; i < 4; i++)
             // {
             //     line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
@@ -339,19 +338,22 @@ void VISION::fance_image()
     // {
     //     // cout << centerPoints[j] << endl;
     // }
-    angle = (atan((centerPoints[0].y - centerPoints[centerPointNumber - 1].y) / (centerPoints[centerPointNumber - 1].x - centerPoints[0].x))) / PI * 180;
+    if (centerPointNumber >= 4)
+    {
+        angle = (atan((centerPoints[0].y - centerPoints[centerPointNumber - 1].y) / (centerPoints[centerPointNumber - 1].x - centerPoints[0].x))) / PI * 180;
+        if (abs(angle) > 45)
+        {
+            riseCount++;
+            //     cout << "Rise\n";
+        }
+        else if (abs(angle) < 30)
+        {
+            downCount++;
+            //     cout << "Down\n";
+        }
+        detectedCounter = (riseCount + downCount);
+    }
     // cout << angle << "degree\n";
-    if (abs(angle) > 45)
-    {
-        riseCount++;
-        //     cout << "Rise\n";
-    }
-    else if (abs(angle) < 30)
-    {
-        downCount++;
-        //     cout << "Down\n";
-    }
-    detectedCounter = (riseCount + downCount);
     isRise = (riseCount > downCount) ? true : false;
     // imshow("contour info", contours_info(dp_image_text, polyContours2));
 
@@ -362,13 +364,13 @@ void VISION::fance_image()
 }
 void VISION::turnSignImage(Mat original_image, Mat image)
 {
-    double epsilon = 6.5;      // DP Algorithm 的參數
-    int minContour = 6;        // 邊數小於 minContour 會被遮罩
-    int maxContour = 30;       // 邊數大於 maxContour 會遮罩
-    double lowerBondArea = 20; // 面積低於 lowerBondArea 的輪廓會被遮罩
+    double epsilon = 9;          // DP Algorithm 的參數
+    int minContour = 6;          // 邊數小於 minContour 會被遮罩
+    int maxContour = 20;         // 邊數大於 maxContour 會遮罩
+    double lowerBondArea = 2000; // 面積低於 lowerBondArea 的輪廓會被遮罩
 
     cvtColor(image, image, COLOR_BGR2GRAY);
-    threshold(image, image, 40, 255, THRESH_BINARY);
+    threshold(image, image, 10, 255, THRESH_BINARY);
 
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
@@ -439,52 +441,58 @@ void VISION::turnSignImage(Mat original_image, Mat image)
     RotatedRect box;     // 旋轉矩形 class
     Point2f vertices[4]; // 旋轉矩形四頂點
     vector<Point> pt;    // 存一個contour中的點集合
-    int left_pt_count = 0;
-    int right_pt_count = 0;
+    int leftPoints = 0;
+    int rightPoints = 0;
     int contourNumbers = polyContours2.size();
     contourNumbers = (contourNumbers > 0) ? 1 : 0;
 
     for (int a = 0; a < contourNumbers; a++)
     {
+        leftPoints = 0;
+        rightPoints = 0;
         // A) 旋轉矩形
         pt.clear();
         for (int b = 0; b < polyContours2[a].size(); b++)
         {
             pt.push_back(polyContours2[a][b]);
         }
-        box = minAreaRect(pt); // 找到最小矩形，存到 box 中
-        box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
+        // box = minAreaRect(pt); // 找到最小矩形，存到 box 中
+        // box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
 
-        for (int i = 0; i < 4; i++)
-        {
-            line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
-        }
-        // 標示
-        circle(dp_image_2, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8);     // 繪製中心點
-        circle(original_image, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8); // 與原圖比較
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
+        // }
+        // // 標示
+        // circle(dp_image_2, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8);     // 繪製中心點
+        // circle(original_image, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8); // 與原圖比較
 
         for (int b = 0; b < polyContours2[a].size(); b++)
         {
-            circle(dp_image_2, polyContours2[a][b], 0, Scalar(0, 255, 255), 4);
+            // circle(dp_image_2, polyContours2[a][b], 0, Scalar(0, 255, 255), 4);
             if (polyContours2[a][b].x < ((vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4).x)
-            {
-                left_pt_count++;
-            }
+                leftPoints++;
             else
-            {
-                right_pt_count++;
-            }
+                rightPoints++;
         }
-        VISION::direction = (left_pt_count < right_pt_count) ? "turn_left" : "turn_right";
-        putText(original_image, direction, Point(10, 25), 0, 0.8, Scalar(0, 255, 0), 1, 1, false);
+        if (leftPoints + rightPoints < 20 && leftPoints + rightPoints > 5)
+        {
+            if (leftPoints < rightPoints)
+                leftCount++;
+            else if (leftPoints > rightPoints)
+                rightCount++;
+            detectedCounter = (leftCount + rightCoun);
+        }
+        if (leftCount > rightCount)
+            direction = 'L';
+        else if (leftCount < rightCount)
+            direction = 'R';
+        // putText(original_image, direction, Point(10, 25), 0, 0.8, Scalar(0, 255, 0), 1, 1, false);
     }
-    if (left_pt_count < 5)
-        VISION::isDetected = false;
-    else
-        VISION::isDetected = true;
-    cout << left_pt_count << right_pt_count << endl;
+    // cout << leftPoints << rightPoints << endl;
     // imshow("D", dp_image_2);
     // imshow("camera", original_image);
+    return;
 }
 void VISION::stop_sign_image()
 {
