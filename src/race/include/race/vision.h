@@ -28,12 +28,12 @@ namespace VISION
     void init(ros::NodeHandle nh);
     void takingPhoto(int imageName);
     void DontDetectAnything();
-    void green_light_image();
-    void warning_sign_image();
+    void greenLightImage(Mat original_image, Mat image);
+    void warnSignImage(Mat original_image, Mat image);
     void turnSignImage(Mat original_image, Mat image);
     void stop_sign_image();
     void parking_sign_image();
-    void fance_image();
+    void fanceImage(Mat original_image, Mat image);
     Mat filtGraph(Mat img, int color_code);
     enum PhotoColor
     {

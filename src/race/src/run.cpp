@@ -128,7 +128,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
             VISION::takingPhoto((int)fance); // fance_image
         } while (!VISION::isDetected);
         VISION::isDetected = !VISION::isDetected;
-        runAndDetectImage((int)tunnelSign);
+        runAndDetectImage((int)warningSign);
 
         if (level >= end_state)
             return;

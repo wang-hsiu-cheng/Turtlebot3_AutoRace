@@ -4,7 +4,7 @@
 #include "race/wheel.h"
 #include "race/vision.h"
 #include "race/roadCamera.h"
-#define PI 3.141592653589793238462643383279502884
+// #define PI 3.141592653589793238462643383279502884
 
 using namespace std;
 

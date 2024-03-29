@@ -16,9 +16,9 @@ void turnScript(void)
         // std::cout << VISION::direction << " " << VISION::isDetected << endl;
     } while (!VISION::isDetected);
     VISION::isDetected = !VISION::isDetected;
-    if (VISION::direction == "turn left")
+    if (VISION::direction == 'L')
         WHEEL::move_front(0, 1.57); // turn left
-    else if (VISION::direction == "turn right")
+    else if (VISION::direction == 'R')
         WHEEL::move_front(0, -1.57); // turn left
 
     return;

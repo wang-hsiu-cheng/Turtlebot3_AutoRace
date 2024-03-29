@@ -20,7 +20,7 @@ void VISION::init(ros::NodeHandle nh)
 
 void VISION::takingPhoto(int imageName)
 {
-    // VideoCapture cap(0); // 鏡頭編號依序從 012...
+    VideoCapture cap(1); // 鏡頭編號依序從 012...
     Mat img;
     VISION::isDetected = false;
 
@@ -57,11 +57,11 @@ void VISION::takingPhoto(int imageName)
             break;
         case 1:
             img = VISION::filtGraph(img, GREEN);
-            VISION::green_light_image();
+            VISION::greenLightImage(original_image, img);
             break;
         case 2:
             img = VISION::filtGraph(img, RED1);
-            VISION::warning_sign_image();
+            VISION::warnSignImage(original_image, img);
             break;
         case 3:
             img = VISION::filtGraph(img, BLUE);
@@ -69,7 +69,7 @@ void VISION::takingPhoto(int imageName)
             break;
         case 4:
             img = VISION::filtGraph(img, RED2);
-            VISION::fance_image();
+            VISION::fanceImage(original_image, img);
             break;
         case 5:
             VISION::stop_sign_image();
@@ -83,7 +83,7 @@ void VISION::takingPhoto(int imageName)
     }
     if (detectedCounter >= detectingLoop / 2)
     {
-        isDeceted = true;
+        VISION::isDetected = true;
         cout << "detected";
     }
     detectedCounter = 0;
@@ -100,13 +100,17 @@ void VISION::DontDetectAnything()
     // }
     // return;
 }
-void VISION::green_light_image()
+void VISION::greenLightImage(Mat original_image, Mat image)
 {
     // continue detecting red, yellow and green colors.
     // if green exist, then stop detecting and return.
 }
-void VISION::warning_sign_image()
+void VISION::warnSignImage(Mat original_image, Mat image)
 {
+    double epsilon = 12;        
+    int minContour = 3;         
+    int maxContour = 5;         
+    double lowerBondArea = 1000;
     int triangleCount = 0;
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);
@@ -230,8 +234,13 @@ void VISION::warning_sign_image()
     // if exist and large enough, then stop detecting and return.
     return;
 }
-void VISION::fance_image()
+void VISION::fanceImage(Mat original_image, Mat image)
 {
+    double epsilon = 20;       
+    int minContour = 3;        
+    int maxContour = 5;        
+    double lowerBondArea = 200;
+    double angle = 400;
     // int rectangleCount = 0;
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);
@@ -353,6 +362,8 @@ void VISION::fance_image()
         }
         detectedCounter = (riseCount + downCount);
     }
+    // else
+    //     angle = 400;
     // cout << angle << "degree\n";
     isRise = (riseCount > downCount) ? true : false;
     // imshow("contour info", contours_info(dp_image_text, polyContours2));
@@ -481,7 +492,7 @@ void VISION::turnSignImage(Mat original_image, Mat image)
                 leftCount++;
             else if (leftPoints > rightPoints)
                 rightCount++;
-            detectedCounter = (leftCount + rightCoun);
+            detectedCounter = (leftCount + rightCount);
         }
         if (leftCount > rightCount)
             direction = 'L';
