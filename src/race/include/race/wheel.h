@@ -25,6 +25,7 @@ namespace WHEEL
     // void move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right);
     int stop();
     int move_front(int mode, float angle_rad);
+    int moveStraightLine(float distance);
     void moveTo(double x_cor, double y_cor, double z_cor);
     void moveUP(double x_cor, double y_cor, double z_cor);
 
