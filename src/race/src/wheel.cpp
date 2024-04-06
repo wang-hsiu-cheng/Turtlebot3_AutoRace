@@ -162,6 +162,7 @@ int WHEEL::move_front(int mode, float angle_rad)
     }
     if (!flag)
         return 1; // when reach the goal velo will return 1
+    return 0;
     // float speed_x = whole_speed*cos(angle_rad);
     // float speed_y = whole_speed*sin(angle_rad);
     // wheel_pub.linear.x = whole_speed;
@@ -207,6 +208,8 @@ int WHEEL::moveStraightLine(float distance)
             xVelocityNow = 0.2;
         else if (xDistance <= 0.5)
             xVelocityNow = 0.5;
+        else
+            xVelocityNow = 1;
 
         // if ((abs(x_vel_err) / x_vel_err) < 0)
         //     x_vel_const = -x_vel_const;
@@ -257,6 +260,7 @@ int WHEEL::stop()
     }
     if (!flag)
         return 1;
+    return 0;
 }
 void WHEEL::moveTo(double x_cor, double y_cor, double z_cor)
 {
