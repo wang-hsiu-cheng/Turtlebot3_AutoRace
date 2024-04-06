@@ -5,7 +5,7 @@
 void WHEEL::init(ros::NodeHandle nh)
 {
     // wheel_publisher = nh.advertise<geometry_msgs::Point>("wheel_toSTM", 1);
-    wheel_subscriber = nh.subscribe("wheel_fromSTM", 1, WHEEL::callback);
+    wheel_subscriber = nh.subscribe("/cmd_vel", 1, WHEEL::callback);
     wheel_publisher = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10); // miffy use newtopic to the base controller.
     nh.getParam("calibration_x_intercept", calibration_x_intercept);
     nh.getParam("calibration_y_intercept", calibration_y_intercept);
@@ -211,8 +211,6 @@ int WHEEL::moveStraightLine(float distance)
         // if ((abs(x_vel_err) / x_vel_err) < 0)
         //     x_vel_const = -x_vel_const;
         wheel_pub.linear.x = xVelocityNow;
-        wheel_pub.linear.y = 0;
-        wheel_pub.angular.z = 0;
         printf("distance: %.3f, pos err: %.3f, vel now: %.3f, vel before: %.3f\n", distance, xDistance, xVelocityNow, xVelocityBefore);
         wheel_publisher.publish(wheel_pub);
         lastTime = currentTime;
