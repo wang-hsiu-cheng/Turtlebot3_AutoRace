@@ -2,42 +2,44 @@
 #include "math.h"
 #include "ros/ros.h"
 
-#define SOURCE_STRAIGHT "/home/twang/pictureSource/roadline_test2.jpg"
-#define SOURCE_CURVE "/home/twang/pictureSource/roadline_test4.jpg"
+// #define SOURCE_STRAIGHT "/home/twang/pictureSource/roadline_test2.jpg"
+// #define SOURCE_CURVE "/home/twang/pictureSource/roadline_test4.jpg"
 
 void CAMERA1::detectRoad()
 {
-    // VideoCapture cap(1); // 鏡頭編號依序從 012...
+    VideoCapture cap(0); // 鏡頭編號依序從 012...
     Mat img;
     CAMERA1::isDetected = false;
 
-    img = imread(SOURCE_STRAIGHT);
-    if (img.empty())
-    {
-        printf("Error: Unable to load image %s\n", SOURCE_STRAIGHT);
-        CAMERA1::isDetected = false;
-        return;
-    }
-    // TESTING ON PC! Close VideoCapture Temporarily!
-    // if (!cap.isOpened())
-    // { // 確認有連線到該編號的鏡頭
-    //     cout << "Cannot open capture\n";
+    // img = imread(SOURCE_STRAIGHT);
+    // if (img.empty())
+    // {
+    //     printf("Error: Unable to load image %s\n", SOURCE_STRAIGHT);
+    //     CAMERA1::isDetected = false;
     //     return;
     // }
-    // bool ret = cap.read(img);
-    // while (!ret)
-    // {
-    //     cout << "Cant receive frame\n";
-    //     ret = cap.read(img);
-    // }
+    // TESTING ON PC! Close VideoCapture Temporarily!
+    if (!cap.isOpened())
+    { // 確認有連線到該編號的鏡頭
+        cout << "Cannot open capture\n";
+        return;
+    }
+    for (int i = 0; i < detectingLoop; i++)
+    {
+        bool ret = cap.read(img);
+        while (!ret)
+        {
+            cout << "Cant receive frame\n";
+            ret = cap.read(img);
+        }
 
-    Mat originalImage = img.clone();
-    Mat filtYellowImage = img.clone();
-    Mat filtWhiteImage = img.clone();
-    filtGraph(originalImage, filtYellowImage, 'y');
-    filtGraph(originalImage, filtWhiteImage, 'w');
-    roadLineImage(originalImage, filtYellowImage, filtWhiteImage);
-
+        Mat originalImage = img.clone();
+        Mat filtYellowImage = img.clone();
+        Mat filtWhiteImage = img.clone();
+        filtGraph(originalImage, filtYellowImage, 'y');
+        filtGraph(originalImage, filtWhiteImage, 'w');
+        roadLineImage(originalImage, filtYellowImage, filtWhiteImage);
+    }
     return;
 }
 

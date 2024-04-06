@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
     int test_phase = -1;
     int sign_number;
-    double speed, angle;
+    double speed, angle, distance;
     // nh.getParam("test_phase", test_phase);
     while (test_phase != 0)
     {
@@ -31,7 +31,9 @@ int main(int argc, char **argv)
         switch (test_phase)
         {
         case 1:
-
+            printf("enter distance: ");
+            cin >> distance;
+            WHEEL::moveStraightLine(distance);
             break;
 
         case 2:

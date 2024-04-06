@@ -3,7 +3,7 @@
 #include <time.h>
 #include "ros/ros.h"
 
-#define SOURCE_TURN_LEFT "/home/twang/pictureSource/turntest.jpg"
+// #define SOURCE_TURN_LEFT "/home/twang/pictureSource/turntest.jpg"
 
 void VISION::init(ros::NodeHandle nh)
 {
@@ -26,10 +26,10 @@ void VISION::takingPhoto(int imageName)
 
     printf("[INFO] start takingPhoto\n");
     // img = imread(SOURCE_TURN_LEFT);
-    if (img.empty())
-    {
-        printf("Error: Unable to load image %s\n", SOURCE_TURN_LEFT);
-    }
+    // if (img.empty())
+    // {
+    //     printf("Error: Unable to load image %s\n", SOURCE_TURN_LEFT);
+    // }
     // imshow("origin source", img);
 
     // TESTING ON PC! Close VideoCapture Temporarily!

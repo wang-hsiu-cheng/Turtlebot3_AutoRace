@@ -190,7 +190,7 @@ int WHEEL::moveStraightLine(float distance)
     ros::Time currentTime;
     double dt;
 
-    while (abs(xDistance) > 0.03 && ros::ok())
+    while (abs(xDistance) > 0.001 && ros::ok())
     {
         ros::spinOnce();
         xVelocityBefore = wheel_sub.linear.x;
@@ -200,9 +200,9 @@ int WHEEL::moveStraightLine(float distance)
         xDistance = distance - xDeltaMove;
 
         if (xDistance <= 0.05)
-            xVelocityNow = 0.03;
+            xVelocityNow = 0.02;
         else if (xDistance <= 0.1)
-            xVelocityNow = 0.1;
+            xVelocityNow = 0.07;
         else if (xDistance <= 0.2)
             xVelocityNow = 0.2;
         else if (xDistance <= 0.5)
