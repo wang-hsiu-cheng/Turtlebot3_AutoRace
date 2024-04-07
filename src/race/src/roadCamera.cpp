@@ -7,7 +7,11 @@
 
 void CAMERA1::detectRoad()
 {
+<<<<<<< HEAD
     VideoCapture cap(0); // 鏡頭編號依序從 012...
+=======
+    VideoCapture cap(1); // 鏡頭編號依序從 012...
+>>>>>>> 6ff3d28d54818226ac8e8e861e42ac5925629d5b
     Mat img;
     CAMERA1::isDetected = false;
 
@@ -32,7 +36,10 @@ void CAMERA1::detectRoad()
             cout << "Cant receive frame\n";
             ret = cap.read(img);
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6ff3d28d54818226ac8e8e861e42ac5925629d5b
         Mat originalImage = img.clone();
         Mat filtYellowImage = img.clone();
         Mat filtWhiteImage = img.clone();

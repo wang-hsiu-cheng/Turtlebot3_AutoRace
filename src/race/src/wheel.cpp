@@ -184,7 +184,7 @@ int WHEEL::moveStraightLine(float distance)
 {
     float xDeltaMove = 0;
     float xDistance = 1;
-    float xVelocityNow, xVelocityBefore;
+    float xVelocityNow, xVelocityBefore, zVelocityBefore;
 
     ros::Rate loop_rate(10); // 设置发布频率为10Hz
     ros::Time lastTime = ros::Time::now();
@@ -195,31 +195,40 @@ int WHEEL::moveStraightLine(float distance)
     {
         ros::spinOnce();
         xVelocityBefore = wheel_sub.linear.x;
+        zVelocityBefore = wheel_sub.angular.z;
         currentTime = ros::Time::now();
         dt = (currentTime - lastTime).toSec();
         xDeltaMove += xVelocityBefore * dt;
         xDistance = distance - xDeltaMove;
 
         if (xDistance <= 0.05)
+<<<<<<< HEAD
             xVelocityNow = 0.02;
         else if (xDistance <= 0.1)
             xVelocityNow = 0.07;
+=======
+            xVelocityNow = 0.1;
+        else if (xDistance <= 0.1)
+            xVelocityNow = 0.3;
+>>>>>>> 6ff3d28d54818226ac8e8e861e42ac5925629d5b
         else if (xDistance <= 0.2)
-            xVelocityNow = 0.2;
-        else if (xDistance <= 0.5)
             xVelocityNow = 0.5;
+        else if (xDistance <= 0.5)
+            xVelocityNow = 0.7;
         else
-            xVelocityNow = 1;
+            xVelocityNow = 0.5;
 
         // if ((abs(x_vel_err) / x_vel_err) < 0)
         //     x_vel_const = -x_vel_const;
         wheel_pub.linear.x = xVelocityNow;
-        printf("distance: %.3f, pos err: %.3f, vel now: %.3f, vel before: %.3f\n", distance, xDistance, xVelocityNow, xVelocityBefore);
+        wheel_pub.angular.z = zVelocityBefore;
+        printf("distance: %.3f, pos err: %.3f, vel now: %.3f, vel before: %.3f, z angle: %.3f\n", distance, xDistance, xVelocityNow, xVelocityBefore, zVelocityBefore);
         wheel_publisher.publish(wheel_pub);
         lastTime = currentTime;
         loop_rate.sleep();
     }
     wheel_pub.linear.x = 0;
+    wheel_pub.angular.z = 0;
     wheel_publisher.publish(wheel_pub);
     loop_rate.sleep();
     return 1; // when reach the goal velo will return 1
