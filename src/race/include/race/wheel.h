@@ -9,7 +9,7 @@
 #include <geometry_msgs/Twist.h> //miffy changed from Point to Twist.
 #include "yaml-cpp/yaml.h"
 
-ros::Publisher wheel_publisher; // Topic: mecanum_toSTM
+ros::Publisher wheel_publisher; // Topic: /cmd_vel
 geometry_msgs::Twist wheel_pub;
 
 ros::Subscriber wheel_subscriber; // Topic: mecanum_fromSTM
@@ -23,8 +23,9 @@ namespace WHEEL
     void callback(const geometry_msgs::Twist::ConstPtr &msg);
 
     // void move(vector<double> point_left, vector<double> vector_left, vector<double> point_right, vector<double> vector_right);
-    void stop();
-    void move_front(int mode, float angle_rad);
+    int stop();
+    int move_front(int mode, float angle_rad);
+    int moveStraightLine(float distance);
     void moveTo(double x_cor, double y_cor, double z_cor);
     void moveUP(double x_cor, double y_cor, double z_cor);
 

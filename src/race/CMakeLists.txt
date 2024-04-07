@@ -156,14 +156,6 @@ include
 # target_link_libraries(imu ${catkin_LIBRARIES})
 # add_dependencies(imu ${catkin_EXPORTED_TARGETS})
 
-# add_library(microswitch src/microswitch.cpp)
-# target_link_libraries(microswitch ${catkin_LIBRARIES})
-# add_dependencies(microswitch ${catkin_EXPORTED_TARGETS})
-
-add_library(mecanum src/mecanum.cpp)
-target_link_libraries(mecanum yaml-cpp ${catkin_LIBRARIES})
-add_dependencies(mecanum ${catkin_EXPORTED_TARGETS})
-
 add_library(wheel src/wheel.cpp)
 target_link_libraries(wheel yaml-cpp ${catkin_LIBRARIES})
 add_dependencies(wheel ${catkin_EXPORTED_TARGETS})
@@ -188,24 +180,12 @@ add_library(detect src/detect.cpp)
 target_link_libraries(detect wheel vision roadCamera)
 add_dependencies(detect ${catkin_EXPORTED_TARGETS})
 
-add_library(stage1 src/stage1.cpp)
-target_link_libraries(stage1 mecanum vision)
-add_dependencies(stage1 ${catkin_EXPORTED_TARGETS})
-
-add_library(stage2 src/stage2.cpp)
-target_link_libraries(stage2 mecanum)
-add_dependencies(stage2 ${catkin_EXPORTED_TARGETS})
-
-add_library(stage3 src/stage3.cpp)
-target_link_libraries(stage3 mecanum)
-add_dependencies(stage3 ${catkin_EXPORTED_TARGETS})
-
 add_executable(run src/run.cpp)
 target_link_libraries(run turn_left_right detect)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})
 
 add_executable(testing src/testing.cpp)
-target_link_libraries(testing mecanum vision ${catkin_LIBRARIES})
+target_link_libraries(testing wheel vision roadCamera detect ${catkin_LIBRARIES})
 add_dependencies(testing ${OpenCV_LIBS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(reset src/reset.cpp)

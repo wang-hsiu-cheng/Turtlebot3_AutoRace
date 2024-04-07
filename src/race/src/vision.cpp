@@ -1,6 +1,9 @@
 #include "race/vision.h"
 #include "math.h"
+#include <time.h>
 #include "ros/ros.h"
+
+// #define SOURCE_TURN_LEFT "/home/twang/pictureSource/turntest.jpg"
 
 void VISION::init(ros::NodeHandle nh)
 {
@@ -17,161 +20,368 @@ void VISION::init(ros::NodeHandle nh)
 
 void VISION::takingPhoto(int imageName)
 {
-    VideoCapture cap(0); // 鏡頭編號依序從 012...
+    VideoCapture cap(1); // 鏡頭編號依序從 012...
     Mat img;
-    bool isPrinted = false;
+    VISION::isDetected = false;
 
+    printf("[INFO] start takingPhoto\n");
+    // img = imread(SOURCE_TURN_LEFT);
+    // if (img.empty())
+    // {
+    //     printf("Error: Unable to load image %s\n", SOURCE_TURN_LEFT);
+    // }
+    // imshow("origin source", img);
+
+    // TESTING ON PC! Close VideoCapture Temporarily!
     if (!cap.isOpened())
     { // 確認有連線到該編號的鏡頭
         cout << "Cannot open capture\n";
         return;
     }
-    bool ret = cap.read(img);
-    while (!ret)
+    for (int i = 0; i < detectingLoop; i++)
     {
-        cout << "Cant receive frame\n";
-        ret = cap.read(img);
-    }
+        bool ret = cap.read(img);
+        while (!ret)
+        {
+            cout << "Cant receive frame\n";
+            ret = cap.read(img);
+        }
 
-    Mat original_image = img.clone();
-    switch (imageName)
+        Mat original_image = img.clone();
+        switch (imageName)
+        {
+        case 0:
+            counter++;
+            if (counter == 100)
+                VISION::isDetected = true;
+            break;
+        case 1:
+            img = VISION::filtGraph(img, GREEN);
+            VISION::greenLightImage(original_image, img);
+            break;
+        case 2:
+            img = VISION::filtGraph(img, RED1);
+            VISION::warnSignImage(original_image, img);
+            break;
+        case 3:
+            img = VISION::filtGraph(img, BLUE);
+            VISION::turnSignImage(original_image, img);
+            break;
+        case 4:
+            img = VISION::filtGraph(img, RED2);
+            VISION::fanceImage(original_image, img);
+            break;
+        case 5:
+            VISION::stop_sign_image();
+            break;
+        case 6:
+            VISION::parking_sign_image();
+            break;
+        default:
+            break;
+        }
+    }
+    if (detectedCounter >= detectingLoop / 2)
     {
-    case 0:
-        VISION::clock++;
-        if (clock == 100)
-            VISION::isDetected = true;
-        break;
-    case 1:
-        VISION::green_light_image();
-        break;
-    case 2:
-        VISION::warning_sign_image();
-        break;
-    case 3:
-        img = VISION::filtGraph(img, 't');
-        VISION::turnSignImage(original_image, img);
-        break;
-    case 4:
-        VISION::parking_sign_image();
-        break;
-    case 5:
-        VISION::stop_sign_image();
-        break;
-    case 6:
-        VISION::fance_image();
-        break;
-    case 7:
-        VISION::tunnel_sign_image();
-        break;
-
-    default:
-        break;
+        VISION::isDetected = true;
+        cout << "detected";
     }
+    detectedCounter = 0;
     return;
 }
-void VISION::green_light_image()
+void VISION::DontDetectAnything()
+{
+    // double start, end = 10 * CLOCKS_PER_SEC;
+    // // 紀錄開始計時的時間
+    // start = clock();
+    // while (clock() - start >= end)
+    // {
+    //     VISION::isDetected = true;
+    // }
+    // return;
+}
+void VISION::greenLightImage(Mat original_image, Mat image)
 {
     // continue detecting red, yellow and green colors.
     // if green exist, then stop detecting and return.
 }
-void VISION::warning_sign_image()
+void VISION::warnSignImage(Mat original_image, Mat image)
 {
+    double epsilon = 12;        
+    int minContour = 3;         
+    int maxContour = 5;         
+    double lowerBondArea = 1000;
+    int triangleCount = 0;
+    cvtColor(image, image, COLOR_BGR2GRAY);
+    threshold(image, image, 40, 255, THRESH_BINARY);
+
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+
+    // 1) 找出邊緣
+    findContours(image, contours, hierarchy, RETR_LIST, CHAIN_APPROX_NONE);
+    // imshow("Contours Image (before DP)", image);
+
+    vector<vector<Point>> polyContours(contours.size()); // polyContours 用來存放折線點的集合
+
+    // 2) 簡化邊緣： DP Algorithm
+    for (size_t i = 0; i < contours.size(); i++)
+    {
+        approxPolyDP(Mat(contours[i]), polyContours[i], epsilon, true);
+    }
+
+    Mat dp_image = Mat::zeros(image.size(), CV_8UC3); // 初始化 Mat 後才能使用 drawContours
+    drawContours(dp_image, polyContours, -1, Scalar(255, 0, 255), 0, 0);
+    // imshow("Contours Image (1):", dp_image);
+
+    // 3) 過濾不好的邊緣，用 badContour_mask 遮罩壞輪廓
+    Mat badContour_mask = Mat::zeros(image.size(), CV_8UC3);
+
+    double largestArea = contourArea(polyContours[0]);
+    for (size_t a = 0; a < polyContours.size(); a++)
+    {
+        if (largestArea < contourArea(polyContours[a]))
+            largestArea = contourArea(polyContours[a]);
+    }
+    for (size_t a = 0; a < polyContours.size(); a++)
+    {
+        // if 裡面如果是 true 代表該輪廓是不好的，會先被畫在 badContour)mask 上面
+        if (polyContours[a].size() < minContour || polyContours[a].size() > maxContour ||
+            contourArea(polyContours[a]) < lowerBondArea)
+        {
+            for (size_t b = 0; b < polyContours[a].size() - 1; b++)
+            {
+                line(badContour_mask, polyContours[a][b], polyContours[a][b + 1], Scalar(0, 255, 0), 3);
+            }
+            line(badContour_mask, polyContours[a][0], polyContours[a][polyContours[a].size() - 1], Scalar(0, 255, 0), 1, LINE_AA);
+        }
+    }
+
+    // 進行壞輪廓的遮罩
+    Mat dp_optim_v1_image = Mat::zeros(image.size(), CV_8UC3);
+
+    cvtColor(badContour_mask, badContour_mask, COLOR_BGR2GRAY);
+    threshold(badContour_mask, badContour_mask, 0, 255, THRESH_BINARY_INV);
+    bitwise_and(dp_image, dp_image, dp_optim_v1_image, badContour_mask);
+    // imshow("DP image (Optim v1): ", dp_optim_v1_image);
+
+    // 4) 再從好的邊緣圖中找出邊緣
+    cvtColor(dp_optim_v1_image, dp_optim_v1_image, COLOR_BGR2GRAY);
+    threshold(dp_optim_v1_image, dp_optim_v1_image, 0, 255, THRESH_BINARY);
+    vector<vector<Point>> contours2;
+    vector<Vec4i> hierarchy2;
+
+    findContours(dp_optim_v1_image, contours2, hierarchy2, RETR_LIST, CHAIN_APPROX_NONE);
+
+    // 5) 簡化好輪廓 DP演算法
+    vector<vector<Point>> polyContours2(contours2.size()); // 存放折線點的集合
+    Mat dp_image_2 = Mat::zeros(dp_optim_v1_image.size(), CV_8UC3);
+
+    for (size_t i = 0; i < contours2.size(); i++)
+    {
+        approxPolyDP(Mat(contours2[i]), polyContours2[i], 1, true);
+    }
+    // cout << polyContours2.size();
+    drawContours(dp_image_2, polyContours2, -1, Scalar(255, 0, 255), 2, 0);
+    Mat dp_image_text = dp_image_2.clone();
+    // imshow("Contours Image (2):", dp_image_text);
+    // drawContours(dp_image_text, polyContours2, 0, Scalar(255, 0, 255), 1, 0);
+
+    // 7) 擬和旋轉矩形 + 邊長數量判斷字型 + 標示方塊中心點
+    RotatedRect box;     // 旋轉矩形 class
+    Point2f vertices[4]; // 旋轉矩形四頂點
+    vector<Point> pt;    // 存一個contour中的點集合
+    int leftPoints = 0;
+    int rightPoints = 0;
+    int contourNumbers = polyContours2.size();
+    // contourNumbers = (contourNumbers > 0) ? 1 : 0;
+
+    for (int a = 0; a < contourNumbers; a++)
+    {
+        // A) 旋轉矩形
+        pt.clear();
+        for (int b = 0; b < polyContours2[a].size(); b++)
+        {
+            pt.push_back(polyContours2[a][b]);
+        }
+        box = minAreaRect(pt); // 找到最小矩形，存到 box 中
+        box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
+        // cout << polyContours2[a].size() << endl;
+        if (polyContours2[a].size() == 3)
+        {
+            triangleCount++;
+        }
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
+        // }
+        // 標示
+        circle(dp_image_2, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8);     // 繪製中心點
+        circle(original_image, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8); // 與原圖比較
+    }
+    // imshow("contour info", contours_info(dp_image_text, polyContours2));
+
+    // imshow("D", dp_image_2);
+    // imshow("camera", original_image);
+    if (triangleCount < 3 && triangleCount > 0)
+    {
+        // cout << "Triangle Count: " << rectangleCount;
+        detectedCounter++;
+        // cout << "detect count: " << detect << endl;
+    }
     // continue detecting if sign exist.
     // if exist but not large enough, continue moving and detecting.
     // if exist and large enough, then stop detecting and return.
+    return;
 }
-void VISION::fance_image()
+void VISION::fanceImage(Mat original_image, Mat image)
 {
-}
-void VISION::stop_sign_image()
-{
-}
-void VISION::parking_sign_image()
-{
-}
-void VISION::tunnel_sign_image()
-{
-}
-Mat VISION::filtGraph(Mat img, char colorCode)
-{
-    Mat img_hsv, mask, result;
-    cvtColor(img, img_hsv, COLOR_BGR2HSV);
+    double epsilon = 20;       
+    int minContour = 3;        
+    int maxContour = 5;        
+    double lowerBondArea = 200;
+    double angle = 400;
+    // int rectangleCount = 0;
+    cvtColor(image, image, COLOR_BGR2GRAY);
+    threshold(image, image, 40, 255, THRESH_BINARY);
 
-    switch (colorCode)
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+
+    // 1) 找出邊緣
+    findContours(image, contours, hierarchy, RETR_LIST, CHAIN_APPROX_NONE);
+    // imshow("Contours Image (before DP)", image);
+
+    vector<vector<Point>> polyContours(contours.size()); // polyContours 用來存放折線點的集合
+
+    // 2) 簡化邊緣： DP Algorithm
+    for (size_t i = 0; i < contours.size(); i++)
     {
-    case 'g':
-    { // green range
-        VISION::hue_m = 62;
-        VISION::hue_M = 88;
-        VISION::sat_m = 60;
-        VISION::sat_M = 255;
-        VISION::val_m = 137;
-        VISION::val_M = 255;
-    }
-    break;
-    case 'w':
-    { // white range
-        VISION::hue_m = 0;
-        VISION::hue_M = 255;
-        VISION::sat_m = 0;
-        VISION::sat_M = 102;
-        VISION::val_m = 147;
-        VISION::val_M = 255;
-    }
-    break;
-    case 'b':
-    { // blue range
-        VISION::hue_m = 100;
-        VISION::hue_M = 137;
-        VISION::sat_m = 151;
-        VISION::sat_M = 255;
-        VISION::val_m = 147;
-        VISION::val_M = 255;
-    }
-    break;
-    case 't':
-    { // blue turn sign(draw) range
-        VISION::hue_m = 89;
-        VISION::hue_M = 123;
-        VISION::sat_m = 132;
-        VISION::sat_M = 255;
-        VISION::val_m = 10;
-        VISION::val_M = 255;
-    }
-    break;
-    case 'l':
-    { // road line(picture) range
-        VISION::hue_m = 0;
-        VISION::hue_M = 173;
-        VISION::sat_m = 0;
-        VISION::sat_M = 190;
-        VISION::val_m = 191;
-        VISION::val_M = 226;
-    }
-    break;
-
-    default:
-        break;
+        approxPolyDP(Mat(contours[i]), polyContours[i], epsilon, true);
     }
 
-    Scalar lower(hue_m, sat_m, val_m);
-    Scalar upper(hue_M, sat_M, val_M);
-    inRange(img_hsv, lower, upper, mask);
+    Mat dp_image = Mat::zeros(image.size(), CV_8UC3); // 初始化 Mat 後才能使用 drawContours
+    drawContours(dp_image, polyContours, -1, Scalar(255, 0, 255), 0, 0);
+    // imshow("Contours Image (1):", dp_image);
 
-    result = Mat::zeros(img.size(), CV_8UC3);
-    bitwise_and(img, img, result, mask);
-    // imshow("Letter Filted", result);
-    return result;
+    // 3) 過濾不好的邊緣，用 badContour_mask 遮罩壞輪廓
+    Mat badContour_mask = Mat::zeros(image.size(), CV_8UC3);
+    for (size_t a = 0; a < polyContours.size(); a++)
+    {
+        // if 裡面如果是 true 代表該輪廓是不好的，會先被畫在 badContour)mask 上面
+        if (polyContours[a].size() < minContour || polyContours[a].size() > maxContour ||
+            contourArea(polyContours[a]) < lowerBondArea)
+        {
+            for (size_t b = 0; b < polyContours[a].size() - 1; b++)
+            {
+                line(badContour_mask, polyContours[a][b], polyContours[a][b + 1], Scalar(0, 255, 0), 3);
+            }
+            line(badContour_mask, polyContours[a][0], polyContours[a][polyContours[a].size() - 1], Scalar(0, 255, 0), 1, LINE_AA);
+        }
+    }
+
+    // 進行壞輪廓的遮罩
+    Mat dp_optim_v1_image = Mat::zeros(image.size(), CV_8UC3);
+
+    cvtColor(badContour_mask, badContour_mask, COLOR_BGR2GRAY);
+    threshold(badContour_mask, badContour_mask, 0, 255, THRESH_BINARY_INV);
+    bitwise_and(dp_image, dp_image, dp_optim_v1_image, badContour_mask);
+    // imshow("DP image (Optim v1): ", dp_optim_v1_image);
+
+    // 4) 再從好的邊緣圖中找出邊緣
+    cvtColor(dp_optim_v1_image, dp_optim_v1_image, COLOR_BGR2GRAY);
+    threshold(dp_optim_v1_image, dp_optim_v1_image, 0, 255, THRESH_BINARY);
+    vector<vector<Point>> contours2;
+    vector<Vec4i> hierarchy2;
+
+    findContours(dp_optim_v1_image, contours2, hierarchy2, RETR_LIST, CHAIN_APPROX_NONE);
+
+    // 5) 簡化好輪廓 DP演算法
+    vector<vector<Point>> polyContours2(contours2.size()); // 存放折線點的集合
+    Mat dp_image_2 = Mat::zeros(dp_optim_v1_image.size(), CV_8UC3);
+
+    for (size_t i = 0; i < contours2.size(); i++)
+    {
+        approxPolyDP(Mat(contours2[i]), polyContours2[i], 1, true);
+    }
+    // cout << polyContours2.size();
+    drawContours(dp_image_2, polyContours2, -1, Scalar(255, 0, 255), 2, 0);
+    Mat dp_image_text = dp_image_2.clone();
+    imshow("Contours Image (2):", dp_image_text);
+    // drawContours(dp_image_text, polyContours2, 0, Scalar(255, 0, 255), 1, 0);
+
+    // 7) 擬和旋轉矩形 + 邊長數量判斷字型 + 標示方塊中心點
+    RotatedRect box;     // 旋轉矩形 class
+    Point2f vertices[4]; // 旋轉矩形四頂點
+    vector<Point> pt;    // 存一個contour中的點集合
+    Point2f centerPoints[10];
+    int centerPointNumber = 0;
+    int contourNumbers = polyContours2.size();
+    // contourNumbers = (contourNumbers > 0) ? 1 : 0;
+
+    for (int a = 0; a < contourNumbers; a++)
+    {
+        // A) 旋轉矩形
+        pt.clear();
+        for (int b = 0; b < polyContours2[a].size(); b++)
+        {
+            pt.push_back(polyContours2[a][b]);
+        }
+        box = minAreaRect(pt); // 找到最小矩形，存到 box 中
+        box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
+        if (polyContours2[a].size() == 4)
+        {
+            // rectangleCount++;
+            // for (int i = 0; i < 4; i++)
+            // {
+            //     line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
+            // }
+            // 標示
+            circle(dp_image_2, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8);     // 繪製中心點
+            circle(original_image, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8); // 與原圖比較
+            centerPoints[centerPointNumber] = (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4;
+            centerPointNumber++;
+        }
+    }
+    // for (int i = 0; i < centerPointNumber; i++)
+    // {
+    //     // cout << centerPoints[j] << endl;
+    // }
+    if (centerPointNumber >= 4)
+    {
+        angle = (atan((centerPoints[0].y - centerPoints[centerPointNumber - 1].y) / (centerPoints[centerPointNumber - 1].x - centerPoints[0].x))) / PI * 180;
+        if (abs(angle) > 45)
+        {
+            riseCount++;
+            //     cout << "Rise\n";
+        }
+        else if (abs(angle) < 30)
+        {
+            downCount++;
+            //     cout << "Down\n";
+        }
+        detectedCounter = (riseCount + downCount);
+    }
+    // else
+    //     angle = 400;
+    // cout << angle << "degree\n";
+    isRise = (riseCount > downCount) ? true : false;
+    // imshow("contour info", contours_info(dp_image_text, polyContours2));
+
+    // imshow("D", dp_image_2);
+    // imshow("camera", original_image);
+    // cout << "Triangle Count: " << rectangleCount << endl;
+    return;
 }
 void VISION::turnSignImage(Mat original_image, Mat image)
 {
-    double epsilon = 6.5;      // DP Algorithm 的參數
-    int minContour = 6;        // 邊數小於 minContour 會被遮罩
-    int maxContour = 30;       // 邊數大於 maxContour 會遮罩
-    double lowerBondArea = 20; // 面積低於 lowerBondArea 的輪廓會被遮罩
+    double epsilon = 9;          // DP Algorithm 的參數
+    int minContour = 6;          // 邊數小於 minContour 會被遮罩
+    int maxContour = 20;         // 邊數大於 maxContour 會遮罩
+    double lowerBondArea = 2000; // 面積低於 lowerBondArea 的輪廓會被遮罩
 
     cvtColor(image, image, COLOR_BGR2GRAY);
-    threshold(image, image, 40, 255, THRESH_BINARY);
+    threshold(image, image, 10, 255, THRESH_BINARY);
 
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
@@ -242,126 +452,129 @@ void VISION::turnSignImage(Mat original_image, Mat image)
     RotatedRect box;     // 旋轉矩形 class
     Point2f vertices[4]; // 旋轉矩形四頂點
     vector<Point> pt;    // 存一個contour中的點集合
-    int left_pt_count = 0;
-    int right_pt_count = 0;
+    int leftPoints = 0;
+    int rightPoints = 0;
     int contourNumbers = polyContours2.size();
     contourNumbers = (contourNumbers > 0) ? 1 : 0;
 
     for (int a = 0; a < contourNumbers; a++)
     {
+        leftPoints = 0;
+        rightPoints = 0;
         // A) 旋轉矩形
         pt.clear();
         for (int b = 0; b < polyContours2[a].size(); b++)
         {
             pt.push_back(polyContours2[a][b]);
         }
-        box = minAreaRect(pt); // 找到最小矩形，存到 box 中
-        box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
+        // box = minAreaRect(pt); // 找到最小矩形，存到 box 中
+        // box.points(vertices);  // 把矩形的四個頂點資訊丟給 vertices，points()是 RotatedRect 的函式
 
-        for (int i = 0; i < 4; i++)
-        {
-            line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
-        }
-        // 標示
-        circle(dp_image_2, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8);     // 繪製中心點
-        circle(original_image, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8); // 與原圖比較
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     line(dp_image_2, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0), 2); // 描出旋轉矩形
+        // }
+        // // 標示
+        // circle(dp_image_2, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8);     // 繪製中心點
+        // circle(original_image, (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4, 0, Scalar(0, 255, 255), 8); // 與原圖比較
 
         for (int b = 0; b < polyContours2[a].size(); b++)
         {
-            circle(dp_image_2, polyContours2[a][b], 0, Scalar(0, 255, 255), 4);
+            // circle(dp_image_2, polyContours2[a][b], 0, Scalar(0, 255, 255), 4);
             if (polyContours2[a][b].x < ((vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4).x)
-            {
-                left_pt_count++;
-            }
-            else if (polyContours2[a][b].x > ((vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4).x)
-            {
-                right_pt_count++;
-            }
+                leftPoints++;
+            else
+                rightPoints++;
         }
-        string direction = (left_pt_count < right_pt_count) ? "turn left" : "turn right";
-        putText(original_image, direction, Point(10, 25), 0, 0.8, Scalar(0, 255, 0), 1, 1, false);
+        if (leftPoints + rightPoints < 20 && leftPoints + rightPoints > 5)
+        {
+            if (leftPoints < rightPoints)
+                leftCount++;
+            else if (leftPoints > rightPoints)
+                rightCount++;
+            detectedCounter = (leftCount + rightCount);
+        }
+        if (leftCount > rightCount)
+            direction = 'L';
+        else if (leftCount < rightCount)
+            direction = 'R';
+        // putText(original_image, direction, Point(10, 25), 0, 0.8, Scalar(0, 255, 0), 1, 1, false);
     }
-    if (left_pt_count < 5)
-        VISION::isDetected = false;
-    else
-        VISION::isDetected = true;
+    // cout << leftPoints << rightPoints << endl;
     // imshow("D", dp_image_2);
     // imshow("camera", original_image);
+    return;
 }
-void VISION::road_line_image(Mat src, Mat &ROI, bool isPrinted)
+void VISION::stop_sign_image()
 {
-    Mat gray;
-    cvtColor(ROI, ROI, COLOR_BGR2GRAY);
+}
+void VISION::parking_sign_image()
+{
+}
+Mat VISION::filtGraph(Mat img, int colorCode)
+{
+    Mat img_hsv, mask, result;
+    img_hsv = Mat::zeros(img.size(), CV_8UC3);
+    mask = Mat::zeros(img.size(), CV_8UC3);
+    result = Mat::zeros(img.size(), CV_8UC3);
 
-    Mat thresh;
-    threshold(ROI, thresh, 50, 255, THRESH_BINARY);
-    // imshow("gray", thresh);
+    cvtColor(img, img_hsv, COLOR_BGR2HSV);
 
-    vector<Point> left_line;
-    vector<Point> right_line;
-
-    // left road line
-    for (int i = thresh.rows / 2; i < thresh.rows; i++)
+    // hsv 值改放在 param server
+    switch (colorCode)
     {
-        for (int j = 0; j < thresh.cols / 2; j++)
-        {
-            if (thresh.at<uchar>(i, j) == 255)
-            {
-                left_line.push_back(Point(j, i));
-                break;
-            }
-        }
+    case RED1:
+    { // green range
+        VISION::hue_m = 0;
+        VISION::hue_M = 20;
+        VISION::sat_m = 120;
+        VISION::sat_M = 255;
+        VISION::val_m = 0;
+        VISION::val_M = 255;
     }
-    // right road line
-    for (int i = thresh.rows / 2; i < thresh.rows; i++)
-    {
-        for (int j = thresh.cols - 1; j > thresh.cols / 2; j--)
-        {
-            if (thresh.at<uchar>(i, j) == 255)
-            {
-                right_line.push_back(Point(j, i));
-                break;
-            }
-        }
+    break;
+    case RED2:
+    { // white range
+        VISION::hue_m = 0;
+        VISION::hue_M = 20;
+        VISION::sat_m = 120;
+        VISION::sat_M = 255;
+        VISION::val_m = 0;
+        VISION::val_M = 255;
+    }
+    break;
+    case BLUE:
+    { // blue range
+        VISION::hue_m = 90;
+        VISION::hue_M = 140;
+        VISION::sat_m = 115;
+        VISION::sat_M = 255;
+        VISION::val_m = 0;
+        VISION::val_M = 200;
+    }
+    break;
+    case GREEN:
+    { // blue turn sign(draw) range
+        VISION::hue_m = 89;
+        VISION::hue_M = 123;
+        VISION::sat_m = 132;
+        VISION::sat_M = 255;
+        VISION::val_m = 10;
+        VISION::val_M = 255;
+    }
+    break;
+
+    default:
+        break;
     }
 
-    // draw the road line on the photo
-    if (left_line.size() > 0 && right_line.size() > 0)
-    {
-        double times = pow(10, 2);
-        Point T_L = (left_line[0]);
-        Point B_L = (left_line[left_line.size() - 1]);
-        Point T_R = (right_line[0]);
-        Point B_R = (right_line[right_line.size() - 1]);
-        Point center_begin_point = Point((B_L.x + B_R.x) / 2, B_L.y);
-        Point center_end_point = Point((T_L.x + T_R.x) / 2, T_L.y);
-        double slop = (center_begin_point.y - center_end_point.y) / (center_end_point.x - center_begin_point.x);
-        // if (!isPrinted)
-        // {
-        //     isPrinted = true;
-        //     printf("b_l:%.2f,%.2f t_l:%.2f,%.2f\n", B_L.x * times, B_L.y * times, T_L.x * times, T_L.y * times);
-        //     printf("b_c : %.2f, %.2f t_c : %.2f, %.2f\n", center_begin_point.x * times, center_begin_point.y * times, center_end_point.x * times, center_end_point.y * times);
-        //     printf("b_r : %.2f, %.2f t_r : %.2f, %.2f\n", B_R.x * times, B_R.y * times, T_R.x * times, T_R.y * times);
-        // }
+    Scalar lower(hue_m, sat_m, val_m);
+    Scalar upper(hue_M, sat_M, val_M);
+    inRange(img_hsv, lower, upper, mask);
 
-        // circle(src, B_L, 10, Scalar(0, 0, 255), -1);
-        // circle(src, T_L, 10, Scalar(0, 255, 0), -1);
-        // circle(src, T_R, 10, Scalar(255, 0, 0), -1);
-        // circle(src, B_R, 10, Scalar(0, 255, 255), -1);
-        // circle(src, center_begin_point, 10, Scalar(255, 0, 0), -1);
-        // circle(src, center_end_point, 10, Scalar(0, 255, 255), -1);
-
-        // vector<Point> pts;
-        // pts = {B_L, T_L, T_R, B_R};
-        // vector<vector<Point>> ppts;
-        // ppts.push_back(pts);
-        // fillPoly(src, ppts, Scalar(100, 201, 201));
-
-        // line(src, Point(B_L), Point(T_L), Scalar(0, 255, 0), 10);
-        // line(src, Point(B_R), Point(T_R), Scalar(0, 255, 0), 10);
-        // line(src, Point(center_begin_point), Point(center_end_point), Scalar(0, 255, 255), 10);
-        VISION::isDetected = true;
-    }
+    bitwise_and(img, img, result, mask);
+    // imshow("Letter Filted", result);
+    return result;
 }
 
 // void Callback(const std_msgs::Int64::ConstPtr &msg)

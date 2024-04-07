@@ -1,5 +1,7 @@
-#ifndef _ROAD_H_
-#define _ROAD_H_
+#ifndef _CAMERA1_H_
+#define _CAMERA1_H_
+
+#define PI 3.1415926536
 
 #include "ros/ros.h"
 #include <iostream>
@@ -11,6 +13,9 @@ using namespace cv;
 namespace CAMERA1
 {
     bool isDetected = false;
+    double slop = 0;
+    double newSlop = 0;
+    const int detectingLoop = 40;
     int hue_m = 0;
     int hue_M = 255;
     int sat_m = 0;
@@ -19,8 +24,9 @@ namespace CAMERA1
     int val_M = 255;
 
     void detectRoad();
-    Mat filtGraph(Mat img);
-    void roadLineImage(Mat src, Mat &ROI, bool isPrinted);
+    void filtGraph(Mat src, Mat &filteredImg, char color);
+    void roadLineImage(Mat src, Mat &yellowImg, Mat &whiteImg);
+    double getSlop();
 }
 
 #endif
