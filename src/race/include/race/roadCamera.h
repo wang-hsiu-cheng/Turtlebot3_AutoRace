@@ -15,6 +15,7 @@ namespace CAMERA1
     bool isDetected = false;
     double slop = 0;
     double newSlop = 0;
+    const int detectingLoop = 20;
     int hue_m = 0;
     int hue_M = 255;
     int sat_m = 0;
