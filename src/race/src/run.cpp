@@ -162,6 +162,7 @@ int navigationSystem(ros::NodeHandle nh)
         ROS_ERROR("Failed to execute roslaunch command");
         return 1;
     }
+    return 0;
 
     // if (goalReached)
     //     return 0;
