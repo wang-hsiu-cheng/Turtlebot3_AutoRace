@@ -180,10 +180,6 @@ add_library(detect src/detect.cpp)
 target_link_libraries(detect wheel vision roadCamera)
 add_dependencies(detect ${catkin_EXPORTED_TARGETS})
 
-add_library(stage1 src/stage1.cpp)
-target_link_libraries(stage1 mecanum vision)
-add_dependencies(stage1 ${catkin_EXPORTED_TARGETS})
-
 add_executable(run src/run.cpp)
 target_link_libraries(run turn_left_right detect)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})

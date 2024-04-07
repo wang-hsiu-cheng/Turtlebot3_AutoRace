@@ -202,15 +202,9 @@ int WHEEL::moveStraightLine(float distance)
         xDistance = distance - xDeltaMove;
 
         if (xDistance <= 0.05)
-<<<<<<< HEAD
-            xVelocityNow = 0.02;
-        else if (xDistance <= 0.1)
-            xVelocityNow = 0.07;
-=======
             xVelocityNow = 0.1;
         else if (xDistance <= 0.1)
             xVelocityNow = 0.3;
->>>>>>> 6ff3d28d54818226ac8e8e861e42ac5925629d5b
         else if (xDistance <= 0.2)
             xVelocityNow = 0.5;
         else if (xDistance <= 0.5)
