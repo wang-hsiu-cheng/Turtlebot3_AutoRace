@@ -31,9 +31,10 @@ int main(int argc, char **argv)
         switch (test_phase)
         {
         case 1:
-            printf("enter distance: ");
-            cin >> distance;
-            WHEEL::moveStraightLine(distance);
+            printf("enter distance and angle: ");
+            cin >> distance >> angle;
+            angle = angle / 180 * PI;
+            WHEEL::moveTo(distance, angle);
             break;
 
         case 2:
