@@ -26,8 +26,7 @@ namespace WHEEL
     int stop();
     int move_front(int mode, float angle_rad);
     int moveStraightLine(float distance);
-    void moveTo(double x_cor, double y_cor, double z_cor);
-    void moveUP(double x_cor, double y_cor, double z_cor);
+    void moveTo(int mode, double angleRad);
 
     void readPath(std::string yaml_path);
 
