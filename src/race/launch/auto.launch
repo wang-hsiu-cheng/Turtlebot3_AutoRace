@@ -20,7 +20,7 @@
         <param name="velocity_p_control_2" value="0.5" />
         <param name="velocity_p_control_3" value="0.7" />
         <param name="velocity_p_control_4" value="0.8" />
-        
+
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 
     <!-- <node name="serial_server" pkg="rosserial_server" type="serial_node" output="screen" respawn="true" respawn_delay="3">

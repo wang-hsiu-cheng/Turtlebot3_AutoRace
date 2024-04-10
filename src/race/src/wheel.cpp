@@ -168,7 +168,7 @@ int WHEEL::moveStraightLine(float distance)
         else if (remainDistance <= 0.5)
             xVelocityNow = 0.7;
         else
-            xVelocityNow = 0.5;
+            xVelocityNow = 0.8;
 
         wheel_pub.linear.x = xVelocityNow;
         wheel_pub.angular.z = zVelocityBefore;
