@@ -47,13 +47,22 @@ int main(int argc, char **argv)
             break;
 
         case 3:
+            printf("enter distance and angle: ");
+            cin >> distance >> angle;
+            angle = angle / 180 * PI;
+            printf("%.3f %.3f\n", distance, angle);
+            WHEEL::move_front(0, angle);
+            WHEEL::moveStraightLine(distance);
+            break;
+
+        case 4:
             printf("enter picture code: ");
             cin >> sign_number;
             VISION::takingPhoto(sign_number);
             cout << VISION::isDetected << endl;
             break;
 
-        case 4:
+        case 5:
             printf("enter picture code: ");
             cin >> sign_number;
             runAndDetectImage(sign_number);

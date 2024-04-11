@@ -227,7 +227,6 @@ int WHEEL::moveTo(double distance, double angleRad)
     wheel_pub.angular.z = 0;
     wheel_publisher.publish(wheel_pub);
     loop_rate.sleep();
-
     while (remainDistance > 0.001 && ros::ok())
     {
         ros::spinOnce();
@@ -236,7 +235,9 @@ int WHEEL::moveTo(double distance, double angleRad)
         dt = (currentTime - lastTime).toSec();
         xDeltaMove += xVelocityBefore * dt;
         remainDistance = distance - xDeltaMove;
-        if (xDeltaMove <= distance_p_control_1)
+        if (xDeltaMove <= distance_p_control_0)
+            xVelocityNow = velocity_p_control_0;
+        else if (xDeltaMove <= distance_p_control_1)
             xVelocityNow = velocity_p_control_1;
         else if (xDeltaMove <= distance_p_control_2)
             xVelocityNow = velocity_p_control_2;

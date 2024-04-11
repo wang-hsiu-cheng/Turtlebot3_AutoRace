@@ -27,6 +27,7 @@ int main(int argc, char **argv)
 
     level = init_all_sensors(nh);
 
+    // WHEEL::moveTo(0.45, 0);
     if (reset_state == 0)
     {
         while (nh.ok())
@@ -137,6 +138,7 @@ int navigationSystem(ros::NodeHandle nh)
         ROS_ERROR("Failed to execute roslaunch command");
         return 1;
     }
+    return 0;
 
     // if (goalReached)
     //     return 0;

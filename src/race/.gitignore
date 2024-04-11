@@ -1,1 +1,4 @@
 .vscode
+/urdf
+/world
+/mashes
