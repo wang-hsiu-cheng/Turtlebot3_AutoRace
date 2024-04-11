@@ -1,8 +1,0 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
-
-Name: tf2_kdl
-Description: Description of tf2_kdl
-Version: 0.7.7
-Cflags: -I/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_kdl/include -I/usr/include/eigen3 -I/usr/share/orocos_kdl/cmake/../../../include
-Libs: -L${prefix}/lib -lorocos-kdl
-Requires: 

@@ -1,8 +1,0 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
-
-Name: tf2_sensor_msgs
-Description: Description of tf2_sensor_msgs
-Version: 0.7.7
-Cflags: -I/home/twang/Turtlebot3_AutoRace/src/geometry2/tf2_sensor_msgs/include -I/usr/include/eigen3
-Libs: -L${prefix}/lib 
-Requires: sensor_msgs tf2_ros tf2

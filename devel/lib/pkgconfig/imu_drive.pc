@@ -1,8 +1,0 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
-
-Name: imu_drive
-Description: Description of imu_drive
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
