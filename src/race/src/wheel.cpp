@@ -43,7 +43,7 @@ float max(double a, double b)
 {
     return (a > b) ? a : b;
 }
-int WHEEL::move_front(int mode, float angle_rad)
+int WHEEL::move_front(int mode, float angleRad)
 {
     bool data_check, flag;
     // [Past reqirement] publish velocity and integrate the length that robot run.
@@ -78,13 +78,13 @@ int WHEEL::move_front(int mode, float angle_rad)
         wheel_pub.linear.x = 0;
         wheel_pub.linear.y = 0;
         wheel_pub.angular.z = angleConst;
-        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angle_rad, angleErr, angleConst, angleNow);
+        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angleRad, angleErr, angleConst, angleNow);
         wheel_publisher.publish(wheel_pub);
         currentTime = ros::Time::now();
         dt = (currentTime - lastTime).toSec();
         lastTime = currentTime;
         angleNow += angleConst * dt;
-        angleErr = angle_rad - angleNow;
+        angleErr = angleRad - angleNow;
         loop_rate.sleep();
     }
     wheel_pub.angular.z = 0;
@@ -122,7 +122,7 @@ int WHEEL::move_front(int mode, float angle_rad)
         if (flag)
         {
             xVelocityNow = min((whole_speed), (xVelocityBefore + acceleration));
-            // y_vel_now = min((whole_speed*sin(angle_rad)),(y_vel_before+acceleration));
+            // y_vel_now = min((whole_speed*sin(angleRad)),(y_vel_before+acceleration));
             z_vel_now = 0;
         }
         flag = true;
@@ -149,7 +149,7 @@ int WHEEL::moveStraightLine(float distance)
     ros::Time currentTime;
     double dt;
 
-    while (abs(remainDistance) > 0.001 && ros::ok())
+    while (remainDistance > 0.001 && ros::ok())
     {
         ros::spinOnce();
         xVelocityBefore = wheel_sub.linear.x;
@@ -183,7 +183,7 @@ int WHEEL::moveStraightLine(float distance)
     loop_rate.sleep();
     return 1; // when reach the goal velo will return 1
 }
-void WHEEL::moveTo(int distance, double angleRad)
+int WHEEL::moveTo(double distance, double angleRad)
 {
     double xVelocityNow, zVelocityNow;
     double xVelocityBefore = 0, zVelocityBefore = 0;
@@ -207,13 +207,15 @@ void WHEEL::moveTo(int distance, double angleRad)
             angleConst = omega_p_control_2; // 20degree per second
         else if (angleErr <= rad_p_control_3)
             angleConst = omega_p_control_3; // 30degree per second
+        else
+            angleConst = omega_p_control_3;
 
         if ((abs(angleErr) / angleErr) < 0)
             angleConst = -angleConst;
         wheel_pub.linear.x = 0;
         wheel_pub.linear.y = 0;
         wheel_pub.angular.z = angleConst;
-        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angle_rad, angleErr, angleConst, angleNow);
+        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angleRad, angleErr, angleConst, angleNow);
         wheel_publisher.publish(wheel_pub);
         currentTime = ros::Time::now();
         dt = (currentTime - lastTime).toSec();
@@ -226,17 +228,19 @@ void WHEEL::moveTo(int distance, double angleRad)
     wheel_publisher.publish(wheel_pub);
     loop_rate.sleep();
 
-    while (abs(remainDistance) > 0.001 && ros::ok())
+    while (remainDistance > 0.001 && ros::ok())
     {
         ros::spinOnce();
         xVelocityBefore = wheel_sub.linear.x;
-        zVelocityBefore = wheel_sub.angular.z;
         currentTime = ros::Time::now();
         dt = (currentTime - lastTime).toSec();
         xDeltaMove += xVelocityBefore * dt;
-        remainDistance -= xDeltaMove;
-
-        if (remainDistance <= distance_p_control_0)
+        remainDistance = distance - xDeltaMove;
+        if (xDeltaMove <= distance_p_control_1)
+            xVelocityNow = velocity_p_control_1;
+        else if (xDeltaMove <= distance_p_control_2)
+            xVelocityNow = velocity_p_control_2;
+        else if (remainDistance <= distance_p_control_0)
             xVelocityNow = velocity_p_control_0;
         else if (remainDistance <= distance_p_control_1)
             xVelocityNow = velocity_p_control_1;
@@ -248,7 +252,7 @@ void WHEEL::moveTo(int distance, double angleRad)
             xVelocityNow = velocity_p_control_4;
 
         wheel_pub.linear.x = xVelocityNow;
-        wheel_pub.angular.z = zVelocityBefore;
+        wheel_pub.angular.z = 0;
         printf("distance: %.3f, pos err: %.3f, vel now: %.3f, vel before: %.3f, z angle: %.3f\n", distance, remainDistance, xVelocityNow, xVelocityBefore, zVelocityBefore);
         wheel_publisher.publish(wheel_pub);
         lastTime = currentTime;
@@ -294,19 +298,4 @@ int WHEEL::stop()
     if (!flag)
         return 1;
     return 0;
-}
-
-void WHEEL::readPath(std::string yaml_path)
-{
-    YAML::Node pathConfig = YAML::LoadFile(yaml_path);
-
-    double x, y, z;
-    for (auto xyz : pathConfig)
-    {
-        x = xyz["xyz"][0].as<double>();
-        y = xyz["xyz"][1].as<double>();
-        z = xyz["xyz"][2].as<double>();
-
-        WHEEL::moveTo(x, y, z);
-    }
 }

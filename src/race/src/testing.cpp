@@ -11,7 +11,8 @@ using namespace std;
 void init_all_sensors(ros::NodeHandle nh)
 {
     WHEEL::init(nh);
-    VISION::init(nh);
+    // VISION::init(nh);
+    return;
 }
 
 int main(int argc, char **argv)
@@ -34,6 +35,7 @@ int main(int argc, char **argv)
             printf("enter distance and angle: ");
             cin >> distance >> angle;
             angle = angle / 180 * PI;
+            printf("%.3f %.3f\n", distance, angle);
             WHEEL::moveTo(distance, angle);
             break;
 

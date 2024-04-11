@@ -1,22 +1,22 @@
 <launch>    
     <node name="testing" pkg="race" type="testing" output="screen"  required="true"/>
-        <param name="rad_p_control_0" value="0.1745329252" />
-        <param name="rad_p_control_1" value="0.5235988" />
-        <param name="rad_p_control_2" value="1.0471976" />
-        <param name="rad_p_control_3" value="1.57079632679" />
-        <param name="omega_p_control_0" value="0.087266462599716" />
-        <param name="omega_p_control_1" value="0.174532925199433" />
-        <param name="omega_p_control_2" value="0.349065850398866" />
-        <param name="omega_p_control_3" value="0.523598775598299" />
-        <param name="distance_p_control_0" value="0.03" />
-        <param name="distance_p_control_1" value="0.1" />
-        <param name="distance_p_control_2" value="0.2" />
-        <param name="distance_p_control_3" value="0.5" />
-        <param name="velocity_p_control_0" value="0.1" />
-        <param name="velocity_p_control_1" value="0.35" />
-        <param name="velocity_p_control_2" value="0.5" />
-        <param name="velocity_p_control_3" value="0.7" />
-        <param name="velocity_p_control_4" value="0.8" />
+        <param name="rad_p_control_0" type="double" value="0.1745329252" />
+        <param name="rad_p_control_1" type="double" value="0.5235988" />
+        <param name="rad_p_control_2" type="double" value="1.0471976" />
+        <param name="rad_p_control_3" type="double" value="1.57079632679" />
+        <param name="omega_p_control_0" type="double" value="0.087266462599716" />
+        <param name="omega_p_control_1" type="double" value="0.174532925199433" />
+        <param name="omega_p_control_2" type="double" value="0.349065850398866" />
+        <param name="omega_p_control_3" type="double" value="0.523598775598299" />
+        <param name="distance_p_control_0" type="double" value="0.03" />
+        <param name="distance_p_control_1" type="double" value="0.1" />
+        <param name="distance_p_control_2" type="double" value="0.2" />
+        <param name="distance_p_control_3" type="double" value="0.5" />
+        <param name="velocity_p_control_0" type="double" value="0.1" />
+        <param name="velocity_p_control_1" type="double" value="0.35" />
+        <param name="velocity_p_control_2" type="double" value="0.5" />
+        <param name="velocity_p_control_3" type="double" value="0.7" />
+        <param name="velocity_p_control_4" type="double" value="0.5" />
 
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 

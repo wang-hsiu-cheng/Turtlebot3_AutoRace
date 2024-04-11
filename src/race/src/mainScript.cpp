@@ -1,6 +1,4 @@
 #include "race/mainScript.h"
-
-#include "race/run.h"
 #include <cstdlib> // for system()
 // #include <actionlib/client/simple_action_client.h> // receive goal callback
 // #include <move_base_msgs/MoveBaseAction.h> // goal msgs
@@ -48,10 +46,10 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 1)
     {
-        do
-        {
-            VISION::takingPhoto((int)trafficLight); // green_light_image
-        } while (!VISION::isDetected);
+        // do
+        // {
+        //     VISION::takingPhoto((int)trafficLight); // green_light_image
+        // } while (!VISION::isDetected);
         // runAndDetectImage((int)warningSign);
         run1();
 

@@ -10,5 +10,5 @@
 void runAndDetectImage(const int);
 void fanceDetect(void);
 void turnSignDetect(void);
-void void positionCheck(void);
+void positionCheck(void);
 #endif

@@ -1,6 +1,7 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+#include "race/run.h"
 #include "race/detect.h"
 #include "race/turn_left_right.h"
 #include "race/parking.h"
