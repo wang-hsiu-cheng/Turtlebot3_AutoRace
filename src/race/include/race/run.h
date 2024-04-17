@@ -4,7 +4,7 @@
 #include "race/wheel.h"
 
 #define PI 3.1415926536
-#define road1_yaml "/home/twang/Turtlebot3_AutoRace/src/race/path/road1.yaml"
+#define road1_yaml "~Turtlebot3_AutoRace/src/race/path/road1.yaml"
 #define road2R_yaml "/home/twang/Turtlebot3_AutoRace/src/race/path/road2R.yaml"
 #define road2L_yaml "/home/twang/Turtlebot3_AutoRace/src/race/path/road2L.yaml"
 #define road5_yaml "/home/twang/Turtlebot3_AutoRace/src/race/path/road5.yaml"
