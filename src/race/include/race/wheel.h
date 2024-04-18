@@ -21,6 +21,7 @@ namespace WHEEL
     bool data_check;
     void init(ros::NodeHandle nh);
     void callback(const geometry_msgs::Twist::ConstPtr &msg);
+    void AngularCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
     int stop();
     int move_front(int mode, float angleRad);
