@@ -213,13 +213,13 @@ int WHEEL::moveTo(double distance, double angleRad)
         dt = (currentTime - lastTime).toSec();
         angleNow += zVelocityBefore * dt;
         angleErr = angleRad - angleNow;
-        if (angleErr <= rad_p_control_0)
+        if (abs(angleErr) <= rad_p_control_0)
             angleConst = omega_p_control_0; // 5degree per second
-        else if (angleErr <= rad_p_control_1)
+        else if (abs(angleErr) <= rad_p_control_1)
             angleConst = omega_p_control_1; // 10degree per second
-        else if (angleErr <= rad_p_control_2)
+        else if (abs(angleErr) <= rad_p_control_2)
             angleConst = omega_p_control_2; // 20degree per second
-        else if (angleErr <= rad_p_control_3)
+        else if (abs(angleErr) <= rad_p_control_3)
             angleConst = omega_p_control_3; // 30degree per second
         else
             angleConst = omega_p_control_3;
