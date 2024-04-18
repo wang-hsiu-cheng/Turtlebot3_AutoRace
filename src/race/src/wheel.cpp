@@ -64,13 +64,13 @@ int WHEEL::move_front(int mode, float angleRad)
 
     while (abs(angleErr) > 0.01 && ros::ok())
     {
-        if (angleErr <= 0.1745329252)
+        if (abs(angleErr) <= 0.1745329252)
             angleConst = 0.087266462599716; // 5degree per second
-        else if (angleErr <= 0.5235988)
+        else if (abs(angleErr) <= 0.5235988)
             angleConst = 0.174532925199433; // 10degree per second
-        else if (angleErr <= 1.0471976)
+        else if (abs(angleErr) <= 1.0471976)
             angleConst = 0.349065850398866; // 20degree per second
-        else if (angleErr <= 1.57079632679)
+        else if (abs(angleErr) <= 1.57079632679)
             angleConst = 0.523598775598299; // 30degree per second
 
         if ((abs(angleErr) / angleErr) < 0)
