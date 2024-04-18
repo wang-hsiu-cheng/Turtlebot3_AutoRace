@@ -7,6 +7,7 @@
 #include <vector>
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/Twist.h> //miffy changed from Point to Twist.
+#include "nav_msgs/Odometry.h"
 #include "yaml-cpp/yaml.h"
 
 ros::Publisher wheel_publisher; // Topic: /cmd_vel
@@ -20,7 +21,7 @@ namespace WHEEL
 {
     bool data_check;
     void init(ros::NodeHandle nh);
-    void callback(const geometry_msgs::Twist::ConstPtr &msg);
+    void callback(const nav_msgs::Odometry::ConstPtr &msg);
     void AngularCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
     int stop();

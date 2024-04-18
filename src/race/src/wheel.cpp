@@ -27,19 +27,19 @@ void WHEEL::init(ros::NodeHandle nh)
     nh.getParam("velocity_p_control_4", velocity_p_control_4);
 }
 
-void WHEEL::callback(const geometry_msgs::Twist::ConstPtr &msg) // miffy changed the message type to Twist
+void WHEEL::callback(const nav_msgs::Odometry::ConstPtr &msg) // miffy changed the message type to Twist
 {
-    // ROS_INFO("speed report: x= %f,y= %f,theta= %f",msg->linear.x,msg->linear.y,msg->angular.z);
-    wheel_sub.linear.x = msg->linear.x;
-    wheel_sub.linear.y = msg->linear.y;
-    wheel_sub.linear.z = msg->angular.z;
+    wheel_sub.linear.x = msg->twist.twist.linear.x;
+    wheel_sub.linear.y = msg->twist.twist.linear.y;
+    wheel_sub.angular.z = msg->twist.twist.angular.z;
+    ROS_INFO("speed report: x= %f, y= %f, z= %f", wheel_sub.linear.x, wheel_sub.linear.y, wheel_sub.angular.z);
 }
 void WHEEL::AngularCallback(const geometry_msgs::Twist::ConstPtr &msg) // miffy changed the message type to Twist
 {
     // ROS_INFO("speed report: x= %f,y= %f,theta= %f",msg->linear.x,msg->linear.y,msg->angular.z);
     // wheel_sub.linear.x = msg->linear.x;
     // wheel_sub.linear.y = msg->linear.y;
-    wheel_sub.linear.z = msg->angular.z;
+    wheel_sub.angular.z = msg->angular.z;
     // printf("%f\n", wheel_sub.linear.z);
 }
 
