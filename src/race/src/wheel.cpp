@@ -5,7 +5,7 @@
 void WHEEL::init(ros::NodeHandle nh)
 {
     // wheel_publisher = nh.advertise<geometry_msgs::Point>("wheel_toSTM", 1);
-    wheel_subscriber = nh.subscribe("/cmd_vel", 1, WHEEL::callback);
+    wheel_subscriber = nh.subscribe("/odom", 1, WHEEL::callback);
     wheel_publisher = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10); // miffy use newtopic to the base controller.
     nh.getParam("rad_p_control_0", rad_p_control_0);
     nh.getParam("rad_p_control_1", rad_p_control_1);
@@ -33,6 +33,14 @@ void WHEEL::callback(const geometry_msgs::Twist::ConstPtr &msg) // miffy changed
     wheel_sub.linear.x = msg->linear.x;
     wheel_sub.linear.y = msg->linear.y;
     wheel_sub.linear.z = msg->angular.z;
+}
+void WHEEL::AngularCallback(const geometry_msgs::Twist::ConstPtr &msg) // miffy changed the message type to Twist
+{
+    // ROS_INFO("speed report: x= %f,y= %f,theta= %f",msg->linear.x,msg->linear.y,msg->angular.z);
+    // wheel_sub.linear.x = msg->linear.x;
+    // wheel_sub.linear.y = msg->linear.y;
+    wheel_sub.linear.z = msg->angular.z;
+    // printf("%f\n", wheel_sub.linear.z);
 }
 
 float min(double a, double b)
@@ -199,6 +207,12 @@ int WHEEL::moveTo(double distance, double angleRad)
 
     while (abs(angleErr) > 0.01 && ros::ok())
     {
+        ros::spinOnce();
+        zVelocityBefore = wheel_sub.angular.z;
+        currentTime = ros::Time::now();
+        dt = (currentTime - lastTime).toSec();
+        angleNow += zVelocityBefore * dt;
+        angleErr = angleRad - angleNow;
         if (angleErr <= rad_p_control_0)
             angleConst = omega_p_control_0; // 5degree per second
         else if (angleErr <= rad_p_control_1)
@@ -217,11 +231,7 @@ int WHEEL::moveTo(double distance, double angleRad)
         wheel_pub.angular.z = angleConst;
         printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angleRad, angleErr, angleConst, angleNow);
         wheel_publisher.publish(wheel_pub);
-        currentTime = ros::Time::now();
-        dt = (currentTime - lastTime).toSec();
         lastTime = currentTime;
-        angleNow += angleConst * dt;
-        angleErr = angleRad - angleNow;
         loop_rate.sleep();
     }
     wheel_pub.angular.z = 0;
