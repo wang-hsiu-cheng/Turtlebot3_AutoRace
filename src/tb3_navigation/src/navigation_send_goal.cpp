@@ -1,20 +1,20 @@
 #include <ros/ros.h>
 #include "tb3_navigation/navigation_send_goal.h"
 #include <actionlib/client/simple_action_client.h> // receive goal callback
-#include <move_base_msgs/MoveBaseAction.h> // goal msgs
+#include <move_base_msgs/MoveBaseAction.h>         // goal msgs
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     ros::init(argc, argv, "navigation_send_goal");
     ros::NodeHandle nh_send_goal;
     ROS_INFO("goal node running\n");
-    
+
     nh_send_goal.getParam("/goal_x", x);
     nh_send_goal.getParam("/goal_y", y);
     nh_send_goal.getParam("/goal_theta", theta);
-    
+
     MoveBaseClient ac("move_base", true);
     while (!ac.waitForServer(ros::Duration(5.0)))
     {
@@ -30,11 +30,13 @@ int main(int argc, char** argv)
     goal.target_pose.pose.orientation.w = theta;
     ac.sendGoal(goal);
     ROS_INFO("send Nav end\n");
-    
+
     ac.waitForResult();
     if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
-        ROS_INFO("yes!");
+        printf("yes!");
+        std::string command = "^C ";
+        int result = system(command.c_str());
         return 1;
         // goalReached = true;
     }
