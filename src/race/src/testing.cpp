@@ -63,17 +63,17 @@ int main(int argc, char **argv)
             cin >> sign_number;
             runAndDetectImage(sign_number);
             break;
-        case 6:
-            printf("navigation\n"); //, enter goal x and goal y:
-            // cin >> goal_x >> goal_y;
-            std::string launchFilePath = "~/Turtlebot3_AutoRace/src/tb3_navigation/launch/move_base.launch"; // Replace with the path to your actual launch file
-            std::string command = "roslaunch " + launchFilePath;
-            int result = system(command.c_str());
-            if (result == -1)
-            {
-                ROS_ERROR("Failed to execute roslaunch command");
-            }
-            break;
+        // case 6:
+        //     printf("navigation\n"); //, enter goal x and goal y:
+        //     // cin >> goal_x >> goal_y;
+        //     std::string launchFilePath = "~/Turtlebot3_AutoRace/src/tb3_navigation/launch/move_base.launch"; // Replace with the path to your actual launch file
+        //     std::string command = "roslaunch " + launchFilePath;
+        //     int result = system(command.c_str());
+        //     if (result == -1)
+        //     {
+        //         ROS_ERROR("Failed to execute roslaunch command");
+        //     }
+        //     break;
 
         default:
             break;

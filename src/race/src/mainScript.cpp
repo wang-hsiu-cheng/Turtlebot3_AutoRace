@@ -101,6 +101,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
         // runAndDetectImage((int)warningSign);
         run5();
         fanceDetect();
+        run6();
 
         if (level >= end_state)
             return;
@@ -109,7 +110,6 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 6)
     {
-        run6();
         positionCheck();
         ROS_INFO("Start Nav\n");
         navigationSystem(nh);
