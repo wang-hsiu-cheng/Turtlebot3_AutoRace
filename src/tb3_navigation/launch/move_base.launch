@@ -11,10 +11,11 @@
 
    <include file="$(find tb3_navigation)/launch/gmapping.launch" />
     
-   <!-- <node name="navigation_send_goal" pkg="tb3_navigation" type="navigation_send_goal" output="screen" respawn="false" />
-   <param name="/goal_x" type="double" value="0.5" />
-   <param name="/goal_y" type="double" value="0.5" />
-   <param name="/goal_theta" type="double" value="1.0" /> -->
+   <node name="navigation_send_goal" pkg="tb3_navigation" type="navigation_send_goal" output="screen" respawn="false" >
+      <param name="/goal_x" type="double" value="1.0" />
+      <param name="/goal_y" type="double" value="0.0" />
+      <param name="/goal_theta" type="double" value="1.0" />
+   </node>
 
    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
       <rosparam file="$(find tb3_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
