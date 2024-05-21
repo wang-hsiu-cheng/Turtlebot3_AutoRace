@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <tf2_ros/transform_listener.h>         // get the transtorm between map and base_link
-#include <geometry_msgs/TransformStamped.h>     // get the transtorm between map and base_link
-#include <tf2/exceptions.h>                     // get the transtorm between map and base_link
+#include <tf2_ros/transform_listener.h>     // get the transtorm between map and base_link
+#include <geometry_msgs/TransformStamped.h> // get the transtorm between map and base_link
+#include <tf2/exceptions.h>                 // get the transtorm between map and base_link
 #include "tb3_navigation/navigation_send_goal.h"
 #include <actionlib/client/simple_action_client.h> // receive goal callback
 #include <move_base_msgs/MoveBaseAction.h>         // goal msgs
@@ -32,6 +32,7 @@ int main(int argc, char **argv)
     tf_x = -transformStamped.transform.translation.x;
     tf_y = -transformStamped.transform.translation.y;
     tf_theta = -transformStamped.transform.rotation.w;
+    // tf_thetaAngle = tf2::createQuaternionMsgFromYaw(double angle);
     printf("tf_x: %g, tf_y: %g tf_theta: %g\n", tf_x, tf_y, tf_theta);
     ROS_INFO("Start send goal\n");
     move_base_msgs::MoveBaseGoal goal;
@@ -39,7 +40,7 @@ int main(int argc, char **argv)
     goal.target_pose.header.stamp = ros::Time::now();
     goal.target_pose.pose.position.x = tf_x + x;
     goal.target_pose.pose.position.y = tf_y + y;
-    goal.target_pose.pose.orientation.w = 1.0;
+    goal.target_pose.pose.orientation.w = tf_theta + theta;
     ac.sendGoal(goal);
     ROS_INFO("send Nav end\n");
 
