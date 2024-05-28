@@ -16,9 +16,9 @@ int main(int argc, char **argv)
     tf2_ros::TransformListener tfListener(tfBuffer);
     ROS_INFO("goal node running\n");
 
-    nh_send_goal.getParam("/goal_x", x);
-    nh_send_goal.getParam("/goal_y", y);
-    nh_send_goal.getParam("/goal_theta", theta);
+    nh_send_goal.getParam("navigation_send_goal/goal_x", x);
+    nh_send_goal.getParam("navigation_send_goal/goal_y", y);
+    nh_send_goal.getParam("navigation_send_goal/goal_theta", theta);
 
     MoveBaseClient ac("move_base", true);
     while (!ac.waitForServer(ros::Duration(5.0)))
