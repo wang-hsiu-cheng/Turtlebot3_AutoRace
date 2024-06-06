@@ -180,9 +180,13 @@ add_library(detect src/detect.cpp)
 target_link_libraries(detect wheel vision roadCamera)
 add_dependencies(detect ${catkin_EXPORTED_TARGETS})
 
-add_executable(run src/run.cpp)
-target_link_libraries(run turn_left_right detect)
+add_library(run src/run.cpp)
+target_link_libraries(run wheel)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})
+
+add_executable(mainScript src/mainScript.cpp)
+target_link_libraries(mainScript run turn_left_right detect)
+add_dependencies(mainScript ${catkin_EXPORTED_TARGETS})
 
 add_executable(testing src/testing.cpp)
 target_link_libraries(testing wheel vision roadCamera detect ${catkin_LIBRARIES})

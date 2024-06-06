@@ -1,3 +1,8 @@
 .vscode
+/devel
 /build
 /CMakeLists.txt
+/urdf
+/world
+/meshes
+/src/YDLidar-SDK

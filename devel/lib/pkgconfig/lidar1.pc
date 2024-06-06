@@ -1,8 +1,0 @@
-prefix=/home/twang/Turtlebot3_AutoRace/devel
-
-Name: lidar1
-Description: Description of lidar1
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

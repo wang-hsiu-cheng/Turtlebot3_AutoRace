@@ -1,9 +1,26 @@
 <launch>    
-    <param name="reset_state" type="int" value="6" />
     <param name="begin_state" type="int" value="6" />
-    
-    <node name="run" pkg="race" type="run" output="screen" respawn="false" respawn_delay="1" />
-        
+    <param name="reset_state" type="int" value="6" />
+
+    <node name="mainScript" pkg="race" type="mainScript" output="screen" respawn="false" respawn_delay="1" />
+        <param name="rad_p_control_0" type="double" value="0.1745329252" />
+        <param name="rad_p_control_1" type="double" value="0.5235988" />
+        <param name="rad_p_control_2" type="double" value="1.0471976" />
+        <param name="rad_p_control_3" type="double" value="1.57079632679" />
+        <param name="omega_p_control_0" type="double" value="0.087266462599716" />
+        <param name="omega_p_control_1" type="double" value="0.174532925199433" />
+        <param name="omega_p_control_2" type="double" value="0.349065850398866" />
+        <param name="omega_p_control_3" type="double" value="0.523598775598299" />
+        <param name="distance_p_control_0" type="double" value="0.03" />
+        <param name="distance_p_control_1" type="double" value="0.1" />
+        <param name="distance_p_control_2" type="double" value="0.2" />
+        <param name="distance_p_control_3" type="double" value="0.5" />
+        <param name="velocity_p_control_0" type="double" value="0.03" />
+        <param name="velocity_p_control_1" type="double" value="0.07" />
+        <param name="velocity_p_control_2" type="double" value="0.15" />
+        <param name="velocity_p_control_3" type="double" value="0.28" />
+        <param name="velocity_p_control_4" type="double" value="0.35" />
+
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 
     <!-- <node name="serial_server" pkg="rosserial_server" type="serial_node" output="screen" respawn="true" respawn_delay="3">
