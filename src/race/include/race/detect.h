@@ -9,6 +9,6 @@
 
 void runAndDetectImage(const int);
 void fanceDetect(void);
-void turnSignDetect(void);
+char turnSignDetect(void);
 void positionCheck(void);
 #endif

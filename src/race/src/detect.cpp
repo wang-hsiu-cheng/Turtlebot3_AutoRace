@@ -30,7 +30,7 @@ void runAndDetectImage(const int sign_number)
     } while (!VISION::isDetected && testCounter < 20);
     return;
 }
-void turnSignDetect()
+char turnSignDetect()
 {
     return;
 }
