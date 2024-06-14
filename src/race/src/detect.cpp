@@ -1,11 +1,4 @@
 #include "race/detect.h"
-#include "ros/ros.h"
-#include <iostream>
-#include "stdmsgs_Float32.h"
-#include "race/wheel.h"
-#include <math.h>
-ros::Subscriber vl53_receiver; // Topic: mecanum_fromSTM
-std_msgs::Float32 vl53_distance;
 
 void DETECT::init(ros::NodeHandle nh)
 {
@@ -16,7 +9,7 @@ void DETECT::callback(const std_msgs::Float32::ConstPtr &msg){
     vl53_sub.data = msg->data;
     ROS_INFO("distance: %f",vl53_sub.data);
 }
-void runAndDetectImage(const int sign_number)
+void DETECT::runAndDetectImage(const int sign_number)
 {
     double x, y, z;
     int testCounter = 0;
@@ -46,7 +39,7 @@ void runAndDetectImage(const int sign_number)
     } while (!VISION::isDetected && testCounter < 20);
     return;
 }
-void DETECT::turnSignDetect()
+char DETECT::turnSignDetect(void)
 {
     ros::Rate loop_rate(10);
     float a = 10000, b = 10000, c = 10000;
@@ -63,39 +56,28 @@ void DETECT::turnSignDetect()
     loop_rate.sleep();
     WHEEL::moveTo(0,-0.52359877);
     if (abs(0.1 - a) <= 0.03)
-    {
-      
-    }
+        return 'r';
     else if (abs(0.1 - b) <= 0.03)
+        return 'l';
+    else if (abs(a-b) > 0.1)
     {
-       
-    }
-    else if (abs(0.1 - c) <= 0.03)
-    {
-     
-    }
-    else if (abs(a-b)>0.1)
-    {
-        if(a<=b)
-        {
-
-        }
-        else{
-
-        }
-        
+        if(a < b)
+            return 'r';
+        else
+            return 'l';
     }
     else
     {
-        if (a>=c && b>=c)
-
-        else if (a<=c && b>=c)
-
-        else 
+        if (a < c && b > c)
+            return 'r';
+        else if (a > c && b < c)
+            return 'l';
+        else
+            return 'r'; 
     }
-    return;
+    return 0;
 }
-int fanceDetect()
+int DETECT::fanceDetect()
 {
     ros::Rate loop_rate(10);
     ros::spinOnce();
@@ -104,15 +86,15 @@ int fanceDetect()
     if (c <= 0.05 && c >=0.1)
     {
         prev_c = c;
-        return(1);
+        return 1;
     }
         
     else{
         if(abs(prev_c - c)>=0.05)
-        return(2);
+        return 2;
     }  
 }
-void positionCheck()
+void DETECT::positionCheck()
 {
     return;
 }

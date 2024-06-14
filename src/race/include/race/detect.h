@@ -6,7 +6,7 @@
 #include "race/wheel.h"
 #include "ros/ros.h"
 #include <iostream>
-#include "std_msgs_Float32.h"
+#include "std_msgs/Float32.h"
 #include <math.h>
 
 ros::Subscriber vl53_subscriber; // Topic: mecanum_fromSTM
@@ -20,7 +20,7 @@ namespace DETECT
 
     void runAndDetectImage(const int);
     int fanceDetect(void);
-    int turnSignDetect(void);
+    char turnSignDetect(void);
     void positionCheck(void);
 
 

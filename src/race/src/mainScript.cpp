@@ -64,8 +64,8 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
         // turnScript();
         // cout << "finish turn script\n";
         // runAndDetectImage((int)warningSign);
-        turnSignDetect();
-        run2('l');
+        
+        run2(DETECT::turnSignDetect());
 
         if (level >= end_state)
             return;
@@ -100,7 +100,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
         // } while (!VISION::isRise);
         // runAndDetectImage((int)warningSign);
         run5();
-        fanceDetect();
+        DETECT::fanceDetect();
         run6();
 
         if (level >= end_state)
@@ -110,7 +110,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 6)
     {
-        positionCheck();
+        DETECT::positionCheck();
         ROS_INFO("Start Nav\n");
         navigationSystem(nh);
         // ROS_INFO("Stop Nav\n");

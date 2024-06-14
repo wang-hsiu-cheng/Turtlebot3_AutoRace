@@ -61,7 +61,7 @@ int main(int argc, char **argv)
         case 5:
             printf("detect and run, enter picture code: ");
             cin >> sign_number;
-            runAndDetectImage(sign_number);
+            DETECT::runAndDetectImage(sign_number);
             break;
         // case 6:
         //     printf("navigation\n"); //, enter goal x and goal y:
