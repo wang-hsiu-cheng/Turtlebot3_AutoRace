@@ -13,7 +13,7 @@ void run2(char direction)
         Node pathConfig = LoadFile(road2R_yaml);
         run(pathConfig);
     }
-    else if (direction == 'l')
+    else
     {
         Node pathConfig = LoadFile(road2L_yaml);
         run(pathConfig);
