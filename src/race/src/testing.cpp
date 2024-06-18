@@ -12,7 +12,7 @@ void init_all_sensors(ros::NodeHandle nh)
 {
     WHEEL::init(nh);
     DETECT::init(nh);
-    return 1;
+    return 0;
 }
 
 int main(int argc, char **argv)
