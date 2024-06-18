@@ -50,15 +50,15 @@ char DETECT::turnSignDetect(void)
     loop_rate.sleep();
     ros::spinOnce();
     b = vl53_sub.data / 1000;
-    WHEEL::moveTo(0, 1.04719753);
+    WHEEL::moveTo(0, -1.04719753);
     loop_rate.sleep();
     ros::spinOnce();
     c = vl53_sub.data / 1000;
-    WHEEL::moveTo(0, -0.52359877);
+    WHEEL::moveTo(0, 0.52359877);
     loop_rate.sleep();
-    if (abs(0.1 - a) <= 0.03)
+    if (abs(0.4 - a) <= 0.03)
         return 'r';
-    else if (abs(0.1 - b) <= 0.03)
+    else if (abs(0.4 - b) <= 0.1)
         return 'l';
     else if (abs(a - b) > 0.1)
     {
@@ -90,19 +90,19 @@ int DETECT::fanceDetect()
         ros::spinOnce();
         prev_c = c;
         c = vl53_sub.data / 1000;
-    } while (c < 0.05 || c > 0.1); // fance haven't fall down
+    } while (c < 0.05 || c > 0.2); // fance haven't fall down
     // face down
     do
     {
         ros::spinOnce();
         prev_c = c;
         c = vl53_sub.data / 1000;
-    } while (abs(prev_c - c) < 0.05 || c <= 0.1);
+    } while (abs(prev_c - c) < 0.05 || c <= 0.2);
     while (i < 100)
     {
         ros::spinOnce();
         c = vl53_sub.data / 1000;
-        if (c > 0.1)
+        if (c > 0.2)
             i++;
     }
     // fance rise (prev_c - c large & c > 0.1)

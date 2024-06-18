@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     ROS_INFO("Get current position\n");
     geometry_msgs::TransformStamped transformStamped;
-    transformStamped = tfBuffer.lookupTransform("base_link", "map", ros::Time(0));
+    transformStamped = tfBuffer.lookupTransform("base_footprint", "map", ros::Time(0));
     tf_x = -transformStamped.transform.translation.x;
     tf_y = -transformStamped.transform.translation.y;
     tf_theta = -transformStamped.transform.rotation.w;

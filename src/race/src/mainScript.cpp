@@ -61,8 +61,8 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     if (level == 2)
     {
         // runAndDetectImage((int)warningSign);
-
-        run2(DETECT::turnSignDetect());
+        char dir = DETECT::turnSignDetect();
+        run2(dir);
 
         if (level >= end_state)
             return;

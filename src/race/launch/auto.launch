@@ -18,7 +18,7 @@
         <param name="velocity_p_control_0" type="double" value="0.03" />
         <param name="velocity_p_control_1" type="double" value="0.08" />
         <param name="velocity_p_control_2" type="double" value="0.14" />
-        <param name="velocity_p_control_3" type="double" value="0.20" />
+        <param name="velocity_p_control_3" type="double" value="0.13" />
         <param name="velocity_p_control_4" type="double" value="0.26" />
 
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>

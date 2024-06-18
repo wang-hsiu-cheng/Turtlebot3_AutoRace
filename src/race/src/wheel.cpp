@@ -31,7 +31,10 @@ void WHEEL::callback(const nav_msgs::Odometry::ConstPtr &msg) // miffy changed t
 {
     wheel_sub.linear.x = msg->twist.twist.linear.x;
     wheel_sub.linear.y = msg->twist.twist.linear.y;
-    wheel_sub.angular.z = msg->twist.twist.angular.z;
+    if (abs(msg->twist.twist.angular.z - wheel_sub.angular.z) < 50)
+        wheel_sub.angular.z = msg->twist.twist.angular.z;
+    else
+        wheel_sub.angular.z = wheel_sub.angular.z;
     ROS_INFO("speed report: x= %f, y= %f, z= %f", wheel_sub.linear.x, wheel_sub.linear.y, wheel_sub.angular.z);
 }
 
@@ -140,7 +143,7 @@ int WHEEL::moveCurve(double radius, double angleRad)
     ros::Time lastTime = ros::Time::now();
     ros::Time currentTime;
     double dt;
-    while (abs(angleErr) > 0.01 && ros::ok())
+    while (abs(angleErr) > 0.02 && ros::ok())
     {
         ros::spinOnce();
         xVelocityBefore = wheel_sub.linear.x;
