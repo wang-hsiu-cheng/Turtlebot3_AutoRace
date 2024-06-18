@@ -135,7 +135,7 @@ int WHEEL::moveCurve(double radius, double angleRad)
     double angleErr = angleRad;
     double angleConst;
     double xDeltaMove = 0;
-    double remainDistance = radius * angleRad;
+    double remainDistance = radius * abs(angleRad);
     ros::Rate loop_rate(10);
     ros::Time lastTime = ros::Time::now();
     ros::Time currentTime;
@@ -149,7 +149,7 @@ int WHEEL::moveCurve(double radius, double angleRad)
         dt = (currentTime - lastTime).toSec();
         xDeltaMove += xVelocityBefore * dt;
         angleNow += zVelocityBefore * dt;
-        remainDistance = radius * angleRad - xDeltaMove;
+        remainDistance = radius * abs(angleRad) - xDeltaMove;
         angleErr = angleRad - angleNow;
 
         // if (xDeltaMove <= distance_p_control_0)
@@ -168,6 +168,8 @@ int WHEEL::moveCurve(double radius, double angleRad)
         else
             xVelocityNow = velocity_p_control_3;
         angleConst = xVelocityNow / radius;
+        if ((abs(angleErr) / angleErr) < 0)
+            angleConst = -angleConst;
 
         wheel_pub.linear.x = xVelocityNow;
         wheel_pub.angular.z = angleConst;
