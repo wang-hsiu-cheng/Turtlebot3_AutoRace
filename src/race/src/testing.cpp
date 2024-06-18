@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
     int test_phase = -1;
     int sign_number;
-    double speed, angle, distance, goal_x, goal_y;
+    double speed, angle, distance, radius, goal_x, goal_y;
     // nh.getParam("test_phase", test_phase);
     while (test_phase != 0)
     {
@@ -46,9 +46,10 @@ int main(int argc, char **argv)
             break;
 
         case 3:
-            printf("enter distance: ");
-            cin >> distance;
-            WHEEL::moveStraightLine(distance);
+            printf("enter radius and angle: ");
+            cin >> radius >> angle;
+            angle = angle / 180 * PI;
+            WHEEL::move_curve(radius, angle);
             break;
 
         case 4:
@@ -63,18 +64,25 @@ int main(int argc, char **argv)
             cin >> sign_number;
             DETECT::runAndDetectImage(sign_number);
             break;
-        // case 6:
-        //     printf("navigation\n"); //, enter goal x and goal y:
-        //     // cin >> goal_x >> goal_y;
-        //     std::string launchFilePath = "~/Turtlebot3_AutoRace/src/tb3_navigation/launch/move_base.launch"; // Replace with the path to your actual launch file
-        //     std::string command = "roslaunch " + launchFilePath;
-        //     int result = system(command.c_str());
-        //     if (result == -1)
-        //     {
-        //         ROS_ERROR("Failed to execute roslaunch command");
-        //     }
-        //     break;
-
+        case 6:
+            printf("vl53 test1: ");
+            cout << DETECT::turnSignDetect();
+            break;
+        case 7:
+            printf("vl53 test2: ");
+            cout << DETECT::fanceDetect();
+            break;
+            // case 8:
+            //     printf("navigation\n"); //, enter goal x and goal y:
+            //     // cin >> goal_x >> goal_y;
+            //     std::string launchFilePath = "~/Turtlebot3_AutoRace/src/tb3_navigation/launch/move_base.launch"; // Replace with the path to your actual launch file
+            //     std::string command = "roslaunch " + launchFilePath;
+            //     int result = system(command.c_str());
+            //     if (result == -1)
+            //     {
+            //         ROS_ERROR("Failed to execute roslaunch command");
+            //     }
+            //     break;
         default:
             break;
         }

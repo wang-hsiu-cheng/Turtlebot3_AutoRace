@@ -43,6 +43,146 @@ float max(double a, double b)
 {
     return (a > b) ? a : b;
 }
+int WHEEL::moveTo(double distance, double angleRad)
+{
+    double xVelocityNow, zVelocityNow;
+    double xVelocityBefore = 0, zVelocityBefore = 0;
+    double angleNow = 0;
+    double angleErr = angleRad;
+    double angleConst;
+    double xDeltaMove = 0;
+    double remainDistance = distance;
+    ros::Rate loop_rate(10);
+    ros::Time lastTime = ros::Time::now();
+    ros::Time currentTime;
+    double dt;
+
+    while (abs(angleErr) > 0.01 && ros::ok())
+    {
+        ros::spinOnce();
+        zVelocityBefore = wheel_sub.angular.z;
+        currentTime = ros::Time::now();
+        dt = (currentTime - lastTime).toSec();
+        angleNow += zVelocityBefore * dt;
+        angleErr = angleRad - angleNow;
+        if (abs(angleErr) <= rad_p_control_0)
+            angleConst = omega_p_control_0; // 5degree per second
+        else if (abs(angleErr) <= rad_p_control_1)
+            angleConst = omega_p_control_1; // 10degree per second
+        else if (abs(angleErr) <= rad_p_control_2)
+            angleConst = omega_p_control_2; // 20degree per second
+        else if (abs(angleErr) <= rad_p_control_3)
+            angleConst = omega_p_control_3; // 30degree per second
+        else
+            angleConst = omega_p_control_3;
+
+        if ((abs(angleErr) / angleErr) < 0)
+            angleConst = -angleConst;
+        wheel_pub.linear.x = 0;
+        wheel_pub.linear.y = 0;
+        wheel_pub.angular.z = angleConst;
+        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angleRad, angleErr, angleConst, angleNow);
+        wheel_publisher.publish(wheel_pub);
+        lastTime = currentTime;
+        loop_rate.sleep();
+    }
+    wheel_pub.angular.z = 0;
+    wheel_publisher.publish(wheel_pub);
+    loop_rate.sleep();
+    while (remainDistance > 0.001 && ros::ok())
+    {
+        ros::spinOnce();
+        xVelocityBefore = wheel_sub.linear.x;
+        currentTime = ros::Time::now();
+        dt = (currentTime - lastTime).toSec();
+        xDeltaMove += xVelocityBefore * dt;
+        remainDistance = distance - xDeltaMove;
+        if (xDeltaMove <= distance_p_control_0)
+            xVelocityNow = velocity_p_control_0;
+        else if (xDeltaMove <= distance_p_control_1)
+            xVelocityNow = velocity_p_control_1;
+        else if (xDeltaMove <= distance_p_control_2)
+            xVelocityNow = velocity_p_control_2;
+        else if (remainDistance <= distance_p_control_0)
+            xVelocityNow = velocity_p_control_0;
+        else if (remainDistance <= distance_p_control_1)
+            xVelocityNow = velocity_p_control_1;
+        else if (remainDistance <= distance_p_control_2)
+            xVelocityNow = velocity_p_control_2;
+        else if (remainDistance <= distance_p_control_3)
+            xVelocityNow = velocity_p_control_3;
+        else
+            xVelocityNow = velocity_p_control_4;
+
+        wheel_pub.linear.x = xVelocityNow;
+        wheel_pub.angular.z = 0;
+        printf("distance: %.3f, pos err: %.3f, vel now: %.3f, vel before: %.3f, z angle: %.3f\n", distance, remainDistance, xVelocityNow, xVelocityBefore, zVelocityBefore);
+        wheel_publisher.publish(wheel_pub);
+        lastTime = currentTime;
+        loop_rate.sleep();
+    }
+    wheel_pub.linear.x = 0;
+    wheel_pub.angular.z = 0;
+    wheel_publisher.publish(wheel_pub);
+    loop_rate.sleep();
+    return 1;
+}
+int WHEEL::move_curve(double radius, double angleRad)
+{
+    double xVelocityNow, zVelocityNow;
+    double xVelocityBefore = 0, zVelocityBefore = 0;
+    double angleNow = 0;
+    double angleErr = angleRad;
+    double angleConst;
+    double xDeltaMove = 0;
+    double remainDistance = distance;
+    ros::Rate loop_rate(10);
+    ros::Time lastTime = ros::Time::now();
+    ros::Time currentTime;
+    double dt;
+    while (angleErr > 0.001 && ros::ok())
+    {
+        ros::spinOnce();
+        xVelocityBefore = wheel_sub.linear.x;
+        zVelocityBefore = wheel_sub.angular.z;
+        currentTime = ros::Time::now();
+        dt = (currentTime - lastTime).toSec();
+        xDeltaMove += xVelocityBefore * dt;
+        angleNow += zVelocityBefore * dt;
+        remainDistance = distance - xDeltaMove;
+        angleErr = angleRad - angleNow;
+
+        if (xDeltaMove <= distance_p_control_0)
+            xVelocityNow = velocity_p_control_0;
+        else if (xDeltaMove <= distance_p_control_1)
+            xVelocityNow = velocity_p_control_1;
+        else if (xDeltaMove <= distance_p_control_2)
+            xVelocityNow = velocity_p_control_2;
+        else if (remainDistance <= distance_p_control_0)
+            xVelocityNow = velocity_p_control_0;
+        else if (remainDistance <= distance_p_control_1)
+            xVelocityNow = velocity_p_control_1;
+        else if (remainDistance <= distance_p_control_2)
+            xVelocityNow = velocity_p_control_2;
+        else if (remainDistance <= distance_p_control_3)
+            xVelocityNow = velocity_p_control_3;
+        else
+            xVelocityNow = velocity_p_control_4;
+        angleConst = xVelocityNow / radius;
+
+        wheel_pub.linear.x = xVelocityNow;
+        wheel_pub.angular.z = angleConst;
+        printf("angleRad: %.3f, angleErr: %.3f, xVelocityNow: %.3f, angleConst: %.3f, angleNow: %.3f\n", angleRad, angleErr, xVelocityNow, angleConst, angleNow);
+        wheel_publisher.publish(wheel_pub);
+        lastTime = currentTime;
+        loop_rate.sleep();
+    }
+    wheel_pub.linear.x = 0;
+    wheel_pub.angular.z = 0;
+    wheel_publisher.publish(wheel_pub);
+    loop_rate.sleep();
+    return 1;
+}
 int WHEEL::move_front(int mode, float angleRad)
 {
     bool data_check, flag;
@@ -182,90 +322,6 @@ int WHEEL::moveStraightLine(float distance)
     wheel_publisher.publish(wheel_pub);
     loop_rate.sleep();
     return 1; // when reach the goal velo will return 1
-}
-int WHEEL::moveTo(double distance, double angleRad)
-{
-    double xVelocityNow, zVelocityNow;
-    double xVelocityBefore = 0, zVelocityBefore = 0;
-    double angleNow = 0;
-    double angleErr = angleRad;
-    double angleConst;
-    double xDeltaMove = 0;
-    double remainDistance = distance;
-    ros::Rate loop_rate(10);
-    ros::Time lastTime = ros::Time::now();
-    ros::Time currentTime;
-    double dt;
-
-    while (abs(angleErr) > 0.01 && ros::ok())
-    {
-        ros::spinOnce();
-        zVelocityBefore = wheel_sub.angular.z;
-        currentTime = ros::Time::now();
-        dt = (currentTime - lastTime).toSec();
-        angleNow += zVelocityBefore * dt;
-        angleErr = angleRad - angleNow;
-        if (abs(angleErr) <= rad_p_control_0)
-            angleConst = omega_p_control_0; // 5degree per second
-        else if (abs(angleErr) <= rad_p_control_1)
-            angleConst = omega_p_control_1; // 10degree per second
-        else if (abs(angleErr) <= rad_p_control_2)
-            angleConst = omega_p_control_2; // 20degree per second
-        else if (abs(angleErr) <= rad_p_control_3)
-            angleConst = omega_p_control_3; // 30degree per second
-        else
-            angleConst = omega_p_control_3;
-
-        if ((abs(angleErr) / angleErr) < 0)
-            angleConst = -angleConst;
-        wheel_pub.linear.x = 0;
-        wheel_pub.linear.y = 0;
-        wheel_pub.angular.z = angleConst;
-        printf("ang rad: %.3f, ang err: %.3f, ang const: %.3f, ang now: %.3f\n", angleRad, angleErr, angleConst, angleNow);
-        wheel_publisher.publish(wheel_pub);
-        lastTime = currentTime;
-        loop_rate.sleep();
-    }
-    wheel_pub.angular.z = 0;
-    wheel_publisher.publish(wheel_pub);
-    loop_rate.sleep();
-    while (remainDistance > 0.001 && ros::ok())
-    {
-        ros::spinOnce();
-        xVelocityBefore = wheel_sub.linear.x;
-        currentTime = ros::Time::now();
-        dt = (currentTime - lastTime).toSec();
-        xDeltaMove += xVelocityBefore * dt;
-        remainDistance = distance - xDeltaMove;
-        if (xDeltaMove <= distance_p_control_0)
-            xVelocityNow = velocity_p_control_0;
-        else if (xDeltaMove <= distance_p_control_1)
-            xVelocityNow = velocity_p_control_1;
-        else if (xDeltaMove <= distance_p_control_2)
-            xVelocityNow = velocity_p_control_2;
-        else if (remainDistance <= distance_p_control_0)
-            xVelocityNow = velocity_p_control_0;
-        else if (remainDistance <= distance_p_control_1)
-            xVelocityNow = velocity_p_control_1;
-        else if (remainDistance <= distance_p_control_2)
-            xVelocityNow = velocity_p_control_2;
-        else if (remainDistance <= distance_p_control_3)
-            xVelocityNow = velocity_p_control_3;
-        else
-            xVelocityNow = velocity_p_control_4;
-
-        wheel_pub.linear.x = xVelocityNow;
-        wheel_pub.angular.z = 0;
-        printf("distance: %.3f, pos err: %.3f, vel now: %.3f, vel before: %.3f, z angle: %.3f\n", distance, remainDistance, xVelocityNow, xVelocityBefore, zVelocityBefore);
-        wheel_publisher.publish(wheel_pub);
-        lastTime = currentTime;
-        loop_rate.sleep();
-    }
-    wheel_pub.linear.x = 0;
-    wheel_pub.angular.z = 0;
-    wheel_publisher.publish(wheel_pub);
-    loop_rate.sleep();
-    return 1;
 }
 int WHEEL::stop()
 {

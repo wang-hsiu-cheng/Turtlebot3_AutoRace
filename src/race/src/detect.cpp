@@ -2,12 +2,13 @@
 
 void DETECT::init(ros::NodeHandle nh)
 {
-    vl53_subscriber = nh.subscribe("/distance",1,DETECT::callback);
+    vl53_subscriber = nh.subscribe("/distance", 1, DETECT::callback);
 }
 
-void DETECT::callback(const std_msgs::Float32::ConstPtr &msg){
+void DETECT::callback(const std_msgs::Float32::ConstPtr &msg)
+{
     vl53_sub.data = msg->data;
-    ROS_INFO("distance: %f",vl53_sub.data);
+    ROS_INFO("distance: %f", vl53_sub.data);
 }
 void DETECT::runAndDetectImage(const int sign_number)
 {
@@ -43,25 +44,25 @@ char DETECT::turnSignDetect(void)
 {
     ros::Rate loop_rate(10);
     float a = 10000, b = 10000, c = 10000;
+    ros::spinOnce();
     a = vl53_sub.data / 1000;
+    WHEEL::moveTo(0, 0.52359877);
     loop_rate.sleep();
     ros::spinOnce();
-    WHEEL::moveTo(0,0.52359877);
-    ros::spinOnce;
-    b = vl53_sub.data / 1000;;
+    b = vl53_sub.data / 1000;
+    WHEEL::moveTo(0, 1.04719753);
     loop_rate.sleep();
-    WHEEL::moveTo(0,1.04719753);
-    ros::spinOnce;
-    c = vl53_sub.data / 1000;;
+    ros::spinOnce();
+    c = vl53_sub.data / 1000;
+    WHEEL::moveTo(0, -0.52359877);
     loop_rate.sleep();
-    WHEEL::moveTo(0,-0.52359877);
     if (abs(0.1 - a) <= 0.03)
         return 'r';
     else if (abs(0.1 - b) <= 0.03)
         return 'l';
-    else if (abs(a-b) > 0.1)
+    else if (abs(a - b) > 0.1)
     {
-        if(a < b)
+        if (a < b)
             return 'r';
         else
             return 'l';
@@ -73,26 +74,39 @@ char DETECT::turnSignDetect(void)
         else if (a > c && b < c)
             return 'l';
         else
-            return 'r'; 
+            return 'r';
     }
-    return 0;
 }
 int DETECT::fanceDetect()
 {
     ros::Rate loop_rate(10);
-    ros::spinOnce();
-    float c = vl53_sub.data / 1000;
-    float prev_c = 10000;
-    if (c <= 0.05 && c >=0.1)
+    float c = 0;
+    float prev_c = 0;
+    int i = 0;
+    if (!ros::ok())
+        return 0;
+    do
     {
+        ros::spinOnce();
         prev_c = c;
-        return 1;
+        c = vl53_sub.data / 1000;
+    } while (c < 0.05 || c > 0.1); // fance haven't fall down
+    // face down
+    do
+    {
+        ros::spinOnce();
+        prev_c = c;
+        c = vl53_sub.data / 1000;
+    } while (abs(prev_c - c) < 0.05 || c <= 0.1);
+    while (i < 100)
+    {
+        ros::spinOnce();
+        c = vl53_sub.data / 1000;
+        if (c > 0.1)
+            i++;
     }
-        
-    else{
-        if(abs(prev_c - c)>=0.05)
-        return 2;
-    }  
+    // fance rise (prev_c - c large & c > 0.1)
+    return 1;
 }
 void DETECT::positionCheck()
 {

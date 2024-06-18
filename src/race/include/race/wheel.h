@@ -27,6 +27,7 @@ namespace WHEEL
     int move_front(int mode, float angleRad);
     int moveStraightLine(float distance);
     int moveTo(double distance, double angleRad);
+    int move_curve(double radius, double angleRad);
 
     /* param */
     int pub_x = 0;

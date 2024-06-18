@@ -51,7 +51,6 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
         // {
         //     VISION::takingPhoto((int)trafficLight); // green_light_image
         // } while (!VISION::isDetected);
-        // runAndDetectImage((int)warningSign);
         run1();
 
         if (level >= end_state)
@@ -61,10 +60,8 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 2)
     {
-        // turnScript();
-        // cout << "finish turn script\n";
         // runAndDetectImage((int)warningSign);
-        
+
         run2(DETECT::turnSignDetect());
 
         if (level >= end_state)
@@ -93,15 +90,14 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 5)
     {
-        // runAndDetectImage((int)fance);
+        run5();
+        DETECT::fanceDetect();
         // do
         // {
         //     VISION::takingPhoto((int)fance); // fance_image
         // } while (!VISION::isRise);
-        // runAndDetectImage((int)warningSign);
-        run5();
-        DETECT::fanceDetect();
         run6();
+        // runAndDetectImage((int)warningSign);
 
         if (level >= end_state)
             return;
@@ -123,7 +119,7 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
 int init_all_sensors(ros::NodeHandle nh)
 {
     WHEEL::init(nh);
-    // IMU::init();
+    DETECT::init(nh);
     return 1;
 }
 
