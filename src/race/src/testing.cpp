@@ -11,8 +11,8 @@ using namespace std;
 void init_all_sensors(ros::NodeHandle nh)
 {
     WHEEL::init(nh);
-    // VISION::init(nh);
-    return;
+    DETECT::init(nh);
+    return 1;
 }
 
 int main(int argc, char **argv)
