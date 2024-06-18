@@ -49,7 +49,7 @@ int main(int argc, char **argv)
             printf("enter radius and angle: ");
             cin >> radius >> angle;
             angle = angle / 180 * PI;
-            WHEEL::move_curve(radius, angle);
+            WHEEL::moveCurve(radius, angle);
             break;
 
         case 4:

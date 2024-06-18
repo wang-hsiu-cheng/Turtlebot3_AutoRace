@@ -127,7 +127,7 @@ int WHEEL::moveTo(double distance, double angleRad)
     loop_rate.sleep();
     return 1;
 }
-int WHEEL::move_curve(double radius, double angleRad)
+int WHEEL::moveCurve(double radius, double angleRad)
 {
     double xVelocityNow, zVelocityNow;
     double xVelocityBefore = 0, zVelocityBefore = 0;

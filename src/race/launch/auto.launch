@@ -1,6 +1,6 @@
 <launch>    
-    <param name="begin_state" type="int" value="6" />
-    <param name="reset_state" type="int" value="6" />
+    <param name="begin_state" type="int" value="1" />
+    <param name="reset_state" type="int" value="2" />
 
     <node name="mainScript" pkg="race" type="mainScript" output="screen" respawn="false" respawn_delay="1" />
         <param name="rad_p_control_0" type="double" value="0.1745329252" />
@@ -16,10 +16,10 @@
         <param name="distance_p_control_2" type="double" value="0.2" />
         <param name="distance_p_control_3" type="double" value="0.5" />
         <param name="velocity_p_control_0" type="double" value="0.03" />
-        <param name="velocity_p_control_1" type="double" value="0.07" />
+        <param name="velocity_p_control_1" type="double" value="0.08" />
         <param name="velocity_p_control_2" type="double" value="0.15" />
-        <param name="velocity_p_control_3" type="double" value="0.28" />
-        <param name="velocity_p_control_4" type="double" value="0.35" />
+        <param name="velocity_p_control_3" type="double" value="0.23" />
+        <param name="velocity_p_control_4" type="double" value="0.28" />
 
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 

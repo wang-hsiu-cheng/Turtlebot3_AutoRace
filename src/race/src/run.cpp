@@ -34,11 +34,14 @@ void run(Node pathConfig)
     printf("st\n");
     for (auto point : pathConfig)
     {
-        distance = point["da"][0].as<double>();
-        angle = point["da"][1].as<double>();
+        distance = point["da"][1].as<double>();
+        angle = point["da"][2].as<double>();
         angleRad = angle / 180 * PI;
-        WHEEL::moveTo(distance, angleRad);
-        // WHEEL::move_front(0, angleRad);
-        // WHEEL::moveStraightLine(distance);
+        if (point["da"][0].as<int>() == 1)
+            WHEEL::moveTo(distance, angleRad);
+        else if (point["da"][0].as<int>() == 0)
+            WHEEL::moveCurve(distance, angleRad);
+        else
+            return;
     }
 }
