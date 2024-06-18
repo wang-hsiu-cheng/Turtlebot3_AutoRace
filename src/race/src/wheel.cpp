@@ -135,7 +135,7 @@ int WHEEL::move_curve(double radius, double angleRad)
     double angleErr = angleRad;
     double angleConst;
     double xDeltaMove = 0;
-    double remainDistance = distance;
+    double remainDistance = radius * angleRad;
     ros::Rate loop_rate(10);
     ros::Time lastTime = ros::Time::now();
     ros::Time currentTime;
@@ -158,6 +158,7 @@ int WHEEL::move_curve(double radius, double angleRad)
             xVelocityNow = velocity_p_control_1;
         else if (xDeltaMove <= distance_p_control_2)
             xVelocityNow = velocity_p_control_2;
+
         else if (remainDistance <= distance_p_control_0)
             xVelocityNow = velocity_p_control_0;
         else if (remainDistance <= distance_p_control_1)
