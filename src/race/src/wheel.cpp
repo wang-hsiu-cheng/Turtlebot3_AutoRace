@@ -140,7 +140,7 @@ int WHEEL::moveCurve(double radius, double angleRad)
     ros::Time lastTime = ros::Time::now();
     ros::Time currentTime;
     double dt;
-    while (angleErr > 0.001 && ros::ok())
+    while (abs(angleErr) > 0.001 && ros::ok())
     {
         ros::spinOnce();
         xVelocityBefore = wheel_sub.linear.x;
