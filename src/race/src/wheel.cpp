@@ -165,10 +165,8 @@ int WHEEL::move_curve(double radius, double angleRad)
             xVelocityNow = velocity_p_control_1;
         else if (remainDistance <= distance_p_control_2)
             xVelocityNow = velocity_p_control_2;
-        else if (remainDistance <= distance_p_control_3)
-            xVelocityNow = velocity_p_control_3;
         else
-            xVelocityNow = velocity_p_control_4;
+            xVelocityNow = velocity_p_control_3;
         angleConst = xVelocityNow / radius;
 
         wheel_pub.linear.x = xVelocityNow;
