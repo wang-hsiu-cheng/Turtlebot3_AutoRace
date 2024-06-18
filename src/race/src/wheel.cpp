@@ -149,7 +149,7 @@ int WHEEL::move_curve(double radius, double angleRad)
         dt = (currentTime - lastTime).toSec();
         xDeltaMove += xVelocityBefore * dt;
         angleNow += zVelocityBefore * dt;
-        remainDistance = distance - xDeltaMove;
+        remainDistance = radius * angleRad - xDeltaMove;
         angleErr = angleRad - angleNow;
 
         if (xDeltaMove <= distance_p_control_0)
