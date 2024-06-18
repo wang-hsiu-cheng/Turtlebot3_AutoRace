@@ -152,14 +152,14 @@ int WHEEL::move_curve(double radius, double angleRad)
         remainDistance = radius * angleRad - xDeltaMove;
         angleErr = angleRad - angleNow;
 
-        if (xDeltaMove <= distance_p_control_0)
-            xVelocityNow = velocity_p_control_0;
-        else if (xDeltaMove <= distance_p_control_1)
-            xVelocityNow = velocity_p_control_1;
-        else if (xDeltaMove <= distance_p_control_2)
-            xVelocityNow = velocity_p_control_2;
+        // if (xDeltaMove <= distance_p_control_0)
+        //     xVelocityNow = velocity_p_control_0;
+        // else if (xDeltaMove <= distance_p_control_1)
+        //     xVelocityNow = velocity_p_control_1;
+        // else if (xDeltaMove <= distance_p_control_2)
+        //     xVelocityNow = velocity_p_control_2;
 
-        else if (remainDistance <= distance_p_control_0)
+        if (remainDistance <= distance_p_control_0)
             xVelocityNow = velocity_p_control_0;
         else if (remainDistance <= distance_p_control_1)
             xVelocityNow = velocity_p_control_1;
