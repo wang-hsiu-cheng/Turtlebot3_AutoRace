@@ -109,10 +109,10 @@ int WHEEL::moveTo(double distance, double angleRad)
             xVelocityNow = velocity_p_control_1;
         else if (remainDistance <= distance_p_control_2)
             xVelocityNow = velocity_p_control_2;
-        else if (remainDistance <= distance_p_control_3)
-            xVelocityNow = velocity_p_control_3;
+        // else if (remainDistance <= distance_p_control_3)
+        //     xVelocityNow = velocity_p_control_3;
         else
-            xVelocityNow = velocity_p_control_4;
+            xVelocityNow = velocity_p_control_3;
 
         wheel_pub.linear.x = xVelocityNow;
         wheel_pub.angular.z = 0;
@@ -152,14 +152,13 @@ int WHEEL::moveCurve(double radius, double angleRad)
         remainDistance = radius * abs(angleRad) - xDeltaMove;
         angleErr = angleRad - angleNow;
 
-        // if (xDeltaMove <= distance_p_control_0)
-        //     xVelocityNow = velocity_p_control_0;
-        // else if (xDeltaMove <= distance_p_control_1)
-        //     xVelocityNow = velocity_p_control_1;
-        // else if (xDeltaMove <= distance_p_control_2)
-        //     xVelocityNow = velocity_p_control_2;
-
-        if (remainDistance <= distance_p_control_0)
+        if (xDeltaMove <= distance_p_control_0)
+            xVelocityNow = velocity_p_control_0;
+        else if (xDeltaMove <= distance_p_control_1)
+            xVelocityNow = velocity_p_control_1;
+        else if (xDeltaMove <= distance_p_control_2)
+            xVelocityNow = velocity_p_control_2;
+        else if (remainDistance <= distance_p_control_0)
             xVelocityNow = velocity_p_control_0;
         else if (remainDistance <= distance_p_control_1)
             xVelocityNow = velocity_p_control_1;
