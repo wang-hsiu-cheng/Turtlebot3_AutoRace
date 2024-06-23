@@ -83,6 +83,10 @@ int main(int argc, char **argv)
             //         ROS_ERROR("Failed to execute roslaunch command");
             //     }
             //     break;
+        case 9:
+            printf("photo test: ")
+                VISION::takingPhoto(1);
+
         default:
             break;
         }
