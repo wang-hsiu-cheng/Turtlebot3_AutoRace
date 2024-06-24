@@ -47,10 +47,12 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
     printf("[ROS_INFO] level = %d\n", level);
     if (level == 1)
     {
-        // do
-        // {
-        //     VISION::takingPhoto((int)trafficLight); // green_light_image
-        // } while (!VISION::isDetected);
+        ros::Rate loop_rate(100);
+        do
+        {
+            VISION::takingPhoto(1); // green_light_image
+            loop_rate.sleep();
+        } while (!VISION::isDetected);
         run1();
 
         if (level >= end_state)
@@ -109,8 +111,6 @@ void race_levels(const int begin_state, const int end_state, ros::NodeHandle nh)
         DETECT::positionCheck();
         ROS_INFO("Start Nav\n");
         navigationSystem(nh);
-        // ROS_INFO("Stop Nav\n");
-        // runAndDetectImage((int)nothing);
 
         return;
     }
@@ -120,6 +120,7 @@ int init_all_sensors(ros::NodeHandle nh)
 {
     WHEEL::init(nh);
     DETECT::init(nh);
+    VISION::init(nh);
     return 1;
 }
 
@@ -135,9 +136,4 @@ int navigationSystem(ros::NodeHandle nh)
         return 1;
     }
     return 0;
-
-    // if (goalReached)
-    //     return 0;
-    // else if (!goalReached)
-    //     return 1;
 }

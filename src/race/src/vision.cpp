@@ -5,11 +5,17 @@
 
 void VISION::init(ros::NodeHandle nh)
 {
+    nh.getParam("g_h_min", hue_m);
+    nh.getParam("g_h_max", hue_M);
+    nh.getParam("g_s_min", sat_m);
+    nh.getParam("g_s_max", sat_M);
+    nh.getParam("g_v_min", val_m);
+    nh.getParam("g_v_max", val_M);
 }
 
 void VISION::takingPhoto(int imageName)
 {
-    VideoCapture cap(1); // 鏡頭編號依序從 012...
+    VideoCapture cap(0); // 鏡頭編號依序從 012...
     Mat img;
     VISION::isDetected = false;
 
@@ -20,6 +26,7 @@ void VISION::takingPhoto(int imageName)
         cout << "Cannot open capture\n";
         return;
     }
+    ros::Rate loop_rate(100);
     for (int i = 0; i < detectingLoop; i++)
     {
         bool ret = cap.read(img);
@@ -28,7 +35,10 @@ void VISION::takingPhoto(int imageName)
             cout << "Cant receive frame\n";
             ret = cap.read(img);
         }
+        cout << i;
+        loop_rate.sleep();
     }
+    detectTime++;
     Mat original_image = img.clone();
     switch (imageName)
     {
@@ -67,13 +77,17 @@ void VISION::takingPhoto(int imageName)
     //     VISION::isDetected = true;
     //     cout << "detected";
     // }
-    if (detectedCounter > 0)
+    cout << endl << detectedCounter << endl;
+    if (detectedCounter > 0 || detectTime > 10)
     {
         VISION::isDetected = true;
         cout << "detected";
     }
     else
+    {
+        VISION::isDetected = false;
         cout << "doesn't";
+    }
     detectedCounter = 0;
     return;
 }
@@ -93,9 +107,8 @@ void VISION::greenLightImage(Mat original_image, Mat image)
     double epsilon = 12;
     int minContour = 3;
     int maxContour = 5;
-    double lowerBondArea = 1000;
+    double lowerBondArea = 100;
     double bondArea = 3000;
-    int triangleCount = 0;
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);
 
@@ -104,7 +117,7 @@ void VISION::greenLightImage(Mat original_image, Mat image)
 
     // 1) 找出邊緣
     findContours(image, contours, hierarchy, RETR_LIST, CHAIN_APPROX_NONE);
-    imshow("Contours Image (before DP)", image);
+    // imshow("Contours Image (before DP)", image);
 
     vector<vector<Point>> polyContours(contours.size()); // polyContours 用來存放折線點的集合
 
@@ -116,65 +129,29 @@ void VISION::greenLightImage(Mat original_image, Mat image)
 
     Mat dp_image = Mat::zeros(image.size(), CV_8UC3); // 初始化 Mat 後才能使用 drawContours
     drawContours(dp_image, polyContours, -1, Scalar(255, 0, 255), 0, 0);
-    imshow("Contours Image (1):", dp_image);
+    // imshow("Contours Image (1):", dp_image);
 
     // 3) 過濾不好的邊緣，用 badContour_mask 遮罩壞輪廓
     Mat badContour_mask = Mat::zeros(image.size(), CV_8UC3);
 
-    double largestArea = contourArea(polyContours[0]);
     for (size_t a = 0; a < polyContours.size(); a++)
     {
-        if (largestArea < contourArea(polyContours[a]))
-            largestArea = contourArea(polyContours[a]);
-    }
-    for (size_t a = 0; a < polyContours.size(); a++)
-    {
-        // if 裡面如果是 true 代表該輪廓是不好的，會先被畫在 badContour)mask 上面
-        if (polyContours[a].size() < minContour || polyContours[a].size() > maxContour ||
-            contourArea(polyContours[a]) < lowerBondArea)
-        {
-            for (size_t b = 0; b < polyContours[a].size() - 1; b++)
-            {
-                line(badContour_mask, polyContours[a][b], polyContours[a][b + 1], Scalar(0, 255, 0), 3);
-            }
-            line(badContour_mask, polyContours[a][0], polyContours[a][polyContours[a].size() - 1], Scalar(0, 255, 0), 1, LINE_AA);
-        }
-        else if (contourArea(polyContours[a]) > bondArea)
+
+        // // if 裡面如果是 true 代表該輪廓是不好的，會先被畫在 badContour)mask 上面
+        // if (polyContours[a].size() < minContour || polyContours[a].size() > maxContour ||
+        //     contourArea(polyContours[a]) < lowerBondArea)
+        // {
+        //     for (size_t b = 0; b < polyContours[a].size() - 1; b++)
+        //     {
+        //         line(badContour_mask, polyContours[a][b], polyContours[a][b + 1], Scalar(0, 255, 0), 3);
+        //     }
+        //     line(badContour_mask, polyContours[a][0], polyContours[a][polyContours[a].size() - 1], Scalar(0, 255, 0), 1, LINE_AA);
+        // }
+        if (contourArea(polyContours[a]) > bondArea)
         {
             detectedCounter++;
-            return;
         }
     }
-
-    // // 進行壞輪廓的遮罩
-    // Mat dp_optim_v1_image = Mat::zeros(image.size(), CV_8UC3);
-
-    // cvtColor(badContour_mask, badContour_mask, COLOR_BGR2GRAY);
-    // threshold(badContour_mask, badContour_mask, 0, 255, THRESH_BINARY_INV);
-    // bitwise_and(dp_image, dp_image, dp_optim_v1_image, badContour_mask);
-    // // imshow("DP image (Optim v1): ", dp_optim_v1_image);
-
-    // // 4) 再從好的邊緣圖中找出邊緣
-    // cvtColor(dp_optim_v1_image, dp_optim_v1_image, COLOR_BGR2GRAY);
-    // threshold(dp_optim_v1_image, dp_optim_v1_image, 0, 255, THRESH_BINARY);
-    // vector<vector<Point>> contours2;
-    // vector<Vec4i> hierarchy2;
-
-    // findContours(dp_optim_v1_image, contours2, hierarchy2, RETR_LIST, CHAIN_APPROX_NONE);
-
-    // // 5) 簡化好輪廓 DP演算法
-    // vector<vector<Point>> polyContours2(contours2.size()); // 存放折線點的集合
-    // Mat dp_image_2 = Mat::zeros(dp_optim_v1_image.size(), CV_8UC3);
-
-    // for (size_t i = 0; i < contours2.size(); i++)
-    // {
-    //     approxPolyDP(Mat(contours2[i]), polyContours2[i], 1, true);
-    // }
-    // // cout << polyContours2.size();
-    // drawContours(dp_image_2, polyContours2, -1, Scalar(255, 0, 255), 2, 0);
-    // Mat dp_image_text = dp_image_2.clone();
-    // // imshow("Contours Image (2):", dp_image_text);
-    // // drawContours(dp_image_text, polyContours2, 0, Scalar(255, 0, 255), 1, 0);
 }
 void VISION::warnSignImage(Mat original_image, Mat image)
 {
@@ -626,12 +603,15 @@ Mat VISION::filtGraph(Mat img, int colorCode)
     break;
     case GREEN:
     { // blue turn sign(draw) range
-        VISION::hue_m = 89;
-        VISION::hue_M = 123;
-        VISION::sat_m = 132;
-        VISION::sat_M = 255;
-        VISION::val_m = 10;
-        VISION::val_M = 255;
+        // nh.getParam("g_h_min", hue_m);
+        // nh.getParam("g_h_min", hue_m);
+
+        // VISION::hue_m = 60;
+        // VISION::hue_M = 80;
+        // VISION::sat_m = 175;
+        // VISION::sat_M = 210;
+        // VISION::val_m = 110;
+        // VISION::val_M = 155;
     }
     break;
 
