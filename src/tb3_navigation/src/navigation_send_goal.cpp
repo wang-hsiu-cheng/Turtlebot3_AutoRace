@@ -41,9 +41,9 @@ int main(int argc, char **argv)
     goal.target_pose.pose.position.x = tf_x + x;
     goal.target_pose.pose.position.y = tf_y + y;
     goal.target_pose.pose.orientation.w = tf_theta + theta;
-    goal.target_pose.pose.orientation.x = transformStamped.transform.rotation.x;
-    goal.target_pose.pose.orientation.y = transformStamped.transform.rotation.y;
-    goal.target_pose.pose.orientation.z = transformStamped.transform.rotation.z;
+    // goal.target_pose.pose.orientation.x = transformStamped.transform.rotation.x;
+    // goal.target_pose.pose.orientation.y = transformStamped.transform.rotation.y;
+    // goal.target_pose.pose.orientation.z = transformStamped.transform.rotation.z;
     ac.sendGoal(goal);
     ROS_INFO("send Nav end\n");
 
