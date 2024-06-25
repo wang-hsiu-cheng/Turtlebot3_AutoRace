@@ -17,18 +17,24 @@
         <param name="velocity_p_control_2" type="double" value="0.14" />
         <param name="velocity_p_control_3" type="double" value="0.13" />
         <param name="velocity_p_control_4" type="double" value="0.26" />
-        <param name="g_h_min" type="int" value="60" />
+        <!-- <param name="g_h_min" type="int" value="60" />
         <param name="g_h_max" type="int" value="80" />
         <param name="g_s_min" type="int" value="175" />
         <param name="g_s_max" type="int" value="220" />
         <param name="g_v_min" type="int" value="110" />
-        <param name="g_v_max" type="int" value="160" />
+        <param name="g_v_max" type="int" value="160" /> -->
         <!-- <param name="g_h_min" type="int" value="67" />
         <param name="g_h_max" type="int" value="107" />
-        <param name="g_s_min" type="int" value="127" />
-        <param name="g_s_max" type="int" value="255" />
+        <param name="g_s_min" type="int" value="120" />
+        <param name="g_s_max" type="int" value="140" />
         <param name="g_v_min" type="int" value="102" />
         <param name="g_v_max" type="int" value="255" /> -->
+        <param name="g_h_min" type="int" value="80" />
+        <param name="g_h_max" type="int" value="100" />
+        <param name="g_s_min" type="int" value="120" />
+        <param name="g_s_max" type="int" value="140" />
+        <param name="g_v_min" type="int" value="105" />
+        <param name="g_v_max" type="int" value="120" />
 
     <node name="reset" pkg="race" type="reset" output="screen" respawn="true" respawn_delay="3"/>
 

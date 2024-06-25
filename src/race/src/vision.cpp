@@ -107,8 +107,8 @@ void VISION::greenLightImage(Mat original_image, Mat image)
     double epsilon = 12;
     int minContour = 3;
     int maxContour = 5;
-    double lowerBondArea = 100;
-    double bondArea = 3000;
+    double lowerBondArea = 500;
+    double bondArea = 1000;
     cvtColor(image, image, COLOR_BGR2GRAY);
     threshold(image, image, 40, 255, THRESH_BINARY);
 
@@ -117,7 +117,7 @@ void VISION::greenLightImage(Mat original_image, Mat image)
 
     // 1) 找出邊緣
     findContours(image, contours, hierarchy, RETR_LIST, CHAIN_APPROX_NONE);
-    // imshow("Contours Image (before DP)", image);
+    imshow("Contours Image (before DP)", image);
 
     vector<vector<Point>> polyContours(contours.size()); // polyContours 用來存放折線點的集合
 
