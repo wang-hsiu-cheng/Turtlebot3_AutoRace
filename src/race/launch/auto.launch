@@ -1,6 +1,6 @@
 <launch>    
-    <param name="begin_state" type="int" value="1" />
-    <param name="reset_state" type="int" value="2" />
+    <param name="begin_state" type="int" value="6" />
+    <param name="reset_state" type="int" value="6" />
 
     <node name="mainScript" pkg="race" type="mainScript" output="screen" respawn="false" respawn_delay="1" />
         <param name="rad_p_control_0" type="double" value="0.1745329252" />

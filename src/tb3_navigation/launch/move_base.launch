@@ -13,7 +13,7 @@
    
    <node name="navigation_send_goal" pkg="tb3_navigation" type="navigation_send_goal" output="screen" respawn="false" >
       <param name="goal_x" type="double" value="2.0" />
-      <param name="goal_y" type="double" value="2.0" />
+      <param name="goal_y" type="double" value="-2.0" />
       <param name="goal_theta" type="double" value="1.0" />
    </node>
 
