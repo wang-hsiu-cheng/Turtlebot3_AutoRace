@@ -5,11 +5,17 @@
 
 void VISION::init(ros::NodeHandle nh)
 {
+    nh.getParam("g_h_min", hue_m);
+    nh.getParam("g_h_max", hue_M);
+    nh.getParam("g_s_min", sat_m);
+    nh.getParam("g_s_max", sat_M);
+    nh.getParam("g_v_min", val_m);
+    nh.getParam("g_v_max", val_M);
 }
 
 void VISION::takingPhoto(int imageName)
 {
-    VideoCapture cap(1); // 鏡頭編號依序從 012...
+    VideoCapture cap(0); // 鏡頭編號依序從 012...
     Mat img;
     VISION::isDetected = false;
 
@@ -20,6 +26,7 @@ void VISION::takingPhoto(int imageName)
         cout << "Cannot open capture\n";
         return;
     }
+    ros::Rate loop_rate(100);
     for (int i = 0; i < detectingLoop; i++)
     {
         bool ret = cap.read(img);
@@ -28,7 +35,10 @@ void VISION::takingPhoto(int imageName)
             cout << "Cant receive frame\n";
             ret = cap.read(img);
         }
+        cout << i;
+        loop_rate.sleep();
     }
+    detectTime++;
     Mat original_image = img.clone();
     switch (imageName)
     {
@@ -38,8 +48,8 @@ void VISION::takingPhoto(int imageName)
             VISION::isDetected = true;
         break;
     case 1:
-        // img = VISION::filtGraph(img, GREEN);
-        // VISION::greenLightImage(original_image, img);
+        img = VISION::filtGraph(img, GREEN);
+        VISION::greenLightImage(original_image, img);
         break;
     case 2:
         img = VISION::filtGraph(img, RED1);
@@ -67,10 +77,16 @@ void VISION::takingPhoto(int imageName)
     //     VISION::isDetected = true;
     //     cout << "detected";
     // }
-    if (detectedCounter > 0)
+    cout << endl << detectedCounter << endl;
+    if (detectedCounter > 0 || detectTime > 10)
     {
         VISION::isDetected = true;
         cout << "detected";
+    }
+    else
+    {
+        VISION::isDetected = false;
+        cout << "doesn't";
     }
     detectedCounter = 0;
     return;
@@ -88,8 +104,54 @@ void VISION::DontDetectAnything()
 }
 void VISION::greenLightImage(Mat original_image, Mat image)
 {
-    // continue detecting red, yellow and green colors.
-    // if green exist, then stop detecting and return.
+    double epsilon = 12;
+    int minContour = 3;
+    int maxContour = 5;
+    double lowerBondArea = 100;
+    double bondArea = 3000;
+    cvtColor(image, image, COLOR_BGR2GRAY);
+    threshold(image, image, 40, 255, THRESH_BINARY);
+
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+
+    // 1) 找出邊緣
+    findContours(image, contours, hierarchy, RETR_LIST, CHAIN_APPROX_NONE);
+    // imshow("Contours Image (before DP)", image);
+
+    vector<vector<Point>> polyContours(contours.size()); // polyContours 用來存放折線點的集合
+
+    // 2) 簡化邊緣： DP Algorithm
+    for (size_t i = 0; i < contours.size(); i++)
+    {
+        approxPolyDP(Mat(contours[i]), polyContours[i], epsilon, true);
+    }
+
+    Mat dp_image = Mat::zeros(image.size(), CV_8UC3); // 初始化 Mat 後才能使用 drawContours
+    drawContours(dp_image, polyContours, -1, Scalar(255, 0, 255), 0, 0);
+    // imshow("Contours Image (1):", dp_image);
+
+    // 3) 過濾不好的邊緣，用 badContour_mask 遮罩壞輪廓
+    Mat badContour_mask = Mat::zeros(image.size(), CV_8UC3);
+
+    for (size_t a = 0; a < polyContours.size(); a++)
+    {
+
+        // // if 裡面如果是 true 代表該輪廓是不好的，會先被畫在 badContour)mask 上面
+        // if (polyContours[a].size() < minContour || polyContours[a].size() > maxContour ||
+        //     contourArea(polyContours[a]) < lowerBondArea)
+        // {
+        //     for (size_t b = 0; b < polyContours[a].size() - 1; b++)
+        //     {
+        //         line(badContour_mask, polyContours[a][b], polyContours[a][b + 1], Scalar(0, 255, 0), 3);
+        //     }
+        //     line(badContour_mask, polyContours[a][0], polyContours[a][polyContours[a].size() - 1], Scalar(0, 255, 0), 1, LINE_AA);
+        // }
+        if (contourArea(polyContours[a]) > bondArea)
+        {
+            detectedCounter++;
+        }
+    }
 }
 void VISION::warnSignImage(Mat original_image, Mat image)
 {
@@ -541,12 +603,15 @@ Mat VISION::filtGraph(Mat img, int colorCode)
     break;
     case GREEN:
     { // blue turn sign(draw) range
-        VISION::hue_m = 89;
-        VISION::hue_M = 123;
-        VISION::sat_m = 132;
-        VISION::sat_M = 255;
-        VISION::val_m = 10;
-        VISION::val_M = 255;
+        // nh.getParam("g_h_min", hue_m);
+        // nh.getParam("g_h_min", hue_m);
+
+        // VISION::hue_m = 60;
+        // VISION::hue_M = 80;
+        // VISION::sat_m = 175;
+        // VISION::sat_M = 210;
+        // VISION::val_m = 110;
+        // VISION::val_M = 155;
     }
     break;
 

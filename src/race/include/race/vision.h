@@ -15,8 +15,9 @@ namespace VISION
     // int lastImageName = 100;
     int imageName = 100;
     int counter = 0;
-    const int detectingLoop = 40;
+    const int detectingLoop = 5;
     int detectedCounter = 0;
+    int detectTime = 0;
     bool isDetected = false;
     int rightCount = 0;
     int leftCount = 0;

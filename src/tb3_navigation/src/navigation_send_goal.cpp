@@ -28,12 +28,12 @@ int main(int argc, char **argv)
 
     ROS_INFO("Get current position\n");
     geometry_msgs::TransformStamped transformStamped;
-    transformStamped = tfBuffer.lookupTransform("base_footprint", "map", ros::Time(0));
-    tf_x = -transformStamped.transform.translation.x;
-    tf_y = -transformStamped.transform.translation.y;
-    tf_theta = -transformStamped.transform.rotation.w;
+    transformStamped = tfBuffer.lookupTransform("map", "base_footprint", ros::Time(0));
+    tf_x = transformStamped.transform.translation.x;
+    tf_y = transformStamped.transform.translation.y;
+    tf_theta = transformStamped.transform.rotation.w;
     // tf_thetaAngle = tf2::createQuaternionMsgFromYaw(double angle);
-    printf("tf_x: %g, tf_y: %g tf_theta: %g\n", tf_x, tf_y, tf_theta);
+    printf("tf_x: %g, tf_y: %g tf_theta: %g\n", tf_x, tf_y);
     ROS_INFO("Start send goal\n");
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose.header.frame_id = "map";
@@ -41,6 +41,9 @@ int main(int argc, char **argv)
     goal.target_pose.pose.position.x = tf_x + x;
     goal.target_pose.pose.position.y = tf_y + y;
     goal.target_pose.pose.orientation.w = tf_theta + theta;
+    goal.target_pose.pose.orientation.x = transformStamped.transform.rotation.x;
+    goal.target_pose.pose.orientation.y = transformStamped.transform.rotation.y;
+    goal.target_pose.pose.orientation.z = transformStamped.transform.rotation.z;
     ac.sendGoal(goal);
     ROS_INFO("send Nav end\n");
 

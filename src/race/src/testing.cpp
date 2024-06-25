@@ -12,6 +12,7 @@ void init_all_sensors(ros::NodeHandle nh)
 {
     WHEEL::init(nh);
     DETECT::init(nh);
+    VISION::init(nh);
     return;
 }
 
@@ -24,7 +25,6 @@ int main(int argc, char **argv)
     int test_phase = -1;
     int sign_number;
     double speed, angle, distance, radius, goal_x, goal_y;
-    // nh.getParam("test_phase", test_phase);
     while (test_phase != 0)
     {
         cout << "input test number: \n";
@@ -83,6 +83,10 @@ int main(int argc, char **argv)
             //         ROS_ERROR("Failed to execute roslaunch command");
             //     }
             //     break;
+        case 9:
+            printf("photo test: ");
+                VISION::takingPhoto(1);
+
         default:
             break;
         }
