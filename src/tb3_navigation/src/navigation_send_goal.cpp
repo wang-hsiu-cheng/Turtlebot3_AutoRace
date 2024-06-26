@@ -34,9 +34,9 @@ int main(int argc, char **argv)
     tf_x = transformStamped.transform.translation.x;
     tf_y = transformStamped.transform.translation.y;
     tf_theta = transformStamped.transform.rotation.w;
-    printf("tf_x: %f, tf_y: %f tf_theta: %f\n", tf_x, tf_y);
+    printf("tf_x: %f, tf_y: %f\n", tf_x, tf_y);
 
-    YAML::Node pathConfig = LoadFile(goal_yaml);
+    Node pathConfig = LoadFile(goal_yaml);
     for (auto point : pathConfig)
     {
         x = point["da"][0].as<double>();

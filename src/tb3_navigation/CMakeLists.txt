@@ -156,7 +156,7 @@ include
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(navigation_send_goal src/navigation_send_goal.cpp)
-target_link_libraries(navigation_send_goal ${catkin_LIBRARIES})
+target_link_libraries(navigation_send_goal yaml-cpp ${catkin_LIBRARIES})
 add_dependencies(navigation_send_goal ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
