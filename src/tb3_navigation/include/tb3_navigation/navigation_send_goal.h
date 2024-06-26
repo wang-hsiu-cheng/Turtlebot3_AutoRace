@@ -10,8 +10,8 @@ double tf_thetaAngle;
 double x = 1.0;
 double y = 0.0;
 double theta = 1.0;
-// bool goalReached = false;
 
+void Init(ros::NodeHandle);
 int SendGoal(double x, double y);
 
 #endif

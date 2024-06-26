@@ -8,7 +8,7 @@
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
-void Init()
+void Init(ros::NodeHandle nh_send_goal)
 {
     nh_send_goal.getParam("navigation_send_goal/goal_x", x);
     nh_send_goal.getParam("navigation_send_goal/goal_y", y);
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     // {
     //     ROS_INFO("waiting for move_base server come up");
     // }
-    Init();
+    Init(nh_send_goal);
 
     ROS_INFO("Get current position\n");
     geometry_msgs::TransformStamped transformStamped;
@@ -34,9 +34,9 @@ int main(int argc, char **argv)
     tf_x = transformStamped.transform.translation.x;
     tf_y = transformStamped.transform.translation.y;
     tf_theta = transformStamped.transform.rotation.w;
-    printf("tf_x: %g, tf_y: %g tf_theta: %g\n", tf_x, tf_y);
+    printf("tf_x: %f, tf_y: %f tf_theta: %f\n", tf_x, tf_y);
 
-    Node pathConfig = LoadFile(goal_yaml);
+    YAML::Node pathConfig = LoadFile(goal_yaml);
     for (auto point : pathConfig)
     {
         x = point["da"][0].as<double>();
@@ -80,6 +80,7 @@ int SendGoal(double _x, double _y)
     x = _x;
     y = _y;
 
+    move_base_msgs::MoveBaseGoal goal;
     goal.target_pose.header.frame_id = "map";
     goal.target_pose.header.stamp = ros::Time::now();
     goal.target_pose.pose.position.x = tf_x + x;
