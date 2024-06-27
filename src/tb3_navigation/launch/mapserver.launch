@@ -1,4 +1,4 @@
 <launch>
-    <arg name="filename" value="$(find tb3_navigation)/map/nav" />
+    <arg name="filename" value="$(find tb3_navigation)/map/tutle_map" />
     <node name="map_save" pkg="map_server" type="map_saver" args="-f $(arg filename)" />
 </launch>
