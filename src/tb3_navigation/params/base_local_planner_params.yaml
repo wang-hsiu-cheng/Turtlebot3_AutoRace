@@ -14,7 +14,7 @@ TrajectoryPlannerROS:
 
   holonomic_robot: false
 
-  sim_time: 0.8
+  sim_time: 0.4
   vx_samples: 18
   vtheta_samples: 20
   sim_granularity: 0.05
