@@ -1,0 +1,35 @@
+# Add udev rules for realsense devices first (if you have not done so already)
+# ```bash
+# echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="8086", MODE="0666"' | sudo tee /etc/udev/rules.d/99-realsense-libusb.rules
+# sudo udevadm control --reload-rules && udevadm trigger
+# ```
+version: '3'
+services:
+  tb3_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TimeZone: Asia/Taipei
+    stdin_open: true
+    tty: true
+    privileged: true # power as root
+    shm_size: '3gb'
+    volumes:
+      # default plugins
+      - /d/.Xauthority:/root/.Xauthority
+      - /d/Documents/Turtlebot3_AutoRace:/root/Turtlebot3_AutoRace
+      # - /d/Documents/Turtlebot3_AutoRace # 掛載 workspace 資料夾，使用絕對路徑
+      - /dev:/dev # I/O 設備掛載
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw # 掛載 X11 socket 以支持 GUI
+    environment:
+      # environment variable that want to bring into container
+      - DISPLAY=host.docker.internal:0.0 # use local computer's screen to display
+      - XAUTHORITY=/root/.Xauthority
+    network_mode: host # use master computer's network
+    devices:
+      - /dev/bus/usb
+    image: tb3:test
+    container_name: ros1_tb3_test
+    command: /bin/bash -c "source /opt/ros/noetic/setup.bash" # blue or yellow
+    # command: bash
