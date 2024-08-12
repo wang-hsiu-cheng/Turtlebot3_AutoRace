@@ -7,7 +7,7 @@
    <node name="map_server" pkg="map_server" type="map_server" args="$(find tb3_navigation)/map/$(arg map)"/> -->
 
    <!--- Run AMCL --> 
-   <!-- <include file="$(find tb3_navigation)/launch/amcl.launch" /> -->
+   <include file="$(find tb3_navigation)/launch/amcl.launch" />
 
    <include file="$(find tb3_navigation)/launch/gmapping.launch" />
    
