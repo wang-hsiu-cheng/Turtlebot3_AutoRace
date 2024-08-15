@@ -4,6 +4,7 @@
 # sudo udevadm control --reload-rules && udevadm trigger
 # ```
 version: '3'
+name: idk
 services:
   tb3_service:
     build:
@@ -30,6 +31,5 @@ services:
     devices:
       - /dev/bus/usb
     image: tb3:test
-    container_name: ros1_tb3_test
-    command: /bin/bash -c "source /opt/ros/noetic/setup.bash" # blue or yellow
-    # command: bash
+    container_name: ros1_tb3
+    command: /bin/bash -c "source /opt/ros/noetic/setup.bash && exec bash"
