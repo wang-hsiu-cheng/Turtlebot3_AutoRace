@@ -1,5 +1,8 @@
 # TB3
 
+## Demo Video
+[![Turtlebot3 Demo Video](https://img.shields.io/badge/YouTube-Gameplay%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/ExLu5sE_4TA?si=4BZHLOa97AUB71TX)
+
 ## How to use
 
 ### install pkg
